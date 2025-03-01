@@ -1,0 +1,13 @@
+manifest:
+  version: 1.2
+  projects:
+    - name: zephyr
+      url: https://github.com/zephyrproject-rtos/zephyr.git
+      revision: v4.0.0
+      path: zephyr
+      import: true
+      west-commands: scripts/west-commands.yml
+    - name: libcsp
+      url: https://github.com/libcsp/libcsp.git
+      revision: v2.0
+      path: modules/lib/libcsp
