@@ -1,0 +1,2 @@
+export FINCH_FLIGHT_SOFTWARE_ROOT="$(cd "$(dirname "$0")" && pwd)"
+echo "FINCH_FLIGHT_SOFTWARE_ROOT set to $FINCH_FLIGHT_SOFTWARE_ROOT"
