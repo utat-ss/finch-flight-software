@@ -5,9 +5,9 @@ LOG_MODULE_REGISTER(obc);
 
 int main(void)
 {
-        while (1) {
-                LOG_INF("obc");
-                k_msleep(1000);
-        }
-        return 0;
+	while (1) {
+		LOG_INF("obc");
+		k_msleep(1000);
+	}
+	return 0;
 }
