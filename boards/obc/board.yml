@@ -1,0 +1,6 @@
+board:
+  name: obc
+  full_name: FINCH OBC
+  vendor: The FINCH CubeSat Project Contributors
+  socs:
+    - name: stm32g431xx

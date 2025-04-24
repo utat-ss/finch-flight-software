@@ -1,0 +1,11 @@
+identifier: finch_obc
+name: FINCH OBC
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmmemb
+ram: 32
+flash: 128
+supported:
+vendor: The FINCH CubeSat Project Contributors

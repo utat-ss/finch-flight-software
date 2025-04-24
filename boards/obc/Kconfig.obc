@@ -1,0 +1,2 @@
+config BOARD_OBC
+        select SOC_STM32G431XX
