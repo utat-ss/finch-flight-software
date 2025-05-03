@@ -1,0 +1,59 @@
+name: Build
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronized
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - name: obc-native
+            board: native_sim
+            path: ./apps/obc
+          - name: obc-nucleo
+            board: nucleo_g431rb
+            path: ./apps/obc
+          - name: pay-native
+            board: native_sim
+            path: ./apps/pay
+          - name: pay-nucleo
+            board: nucleo_h743zi
+            path: ./apps/pay
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+
+      - name: Setup Python venv
+        run: |
+          chmod +x ./scripts/setup_python_venv.sh
+          ./scripts/setup_python_venv.sh
+
+      - name: Setup west workspace
+        run: |
+          chmod +x ./scripts/setup_west_workspace.sh
+          ./scripts/setup_west_workspace.sh
+
+      - name: Build app
+        run: |
+          source ../.venv/bin/activate
+          source ../zephyr/zephyr-env.sh
+          west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
