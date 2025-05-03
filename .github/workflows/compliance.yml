@@ -1,0 +1,52 @@
+name: Compliance check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronized
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  compliance-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Perl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y perl
+
+      - name: Run compliance check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/compliance.pl
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running on PR — checking all commits..."
+            commits=$(gh pr view ${{ github.event.number }} --repo ${{ github.repository }} --json commits --jq '.commits[].oid')
+          else
+            echo "Running on push to main — checking HEAD only..."
+            commits=$(git rev-parse HEAD)
+          fi
+
+          echo "Commits to check:"
+          echo "$commits"
+
+          for commit in $commits; do
+            echo "Running compliance check on commit: $commit"
+            ./scripts/compliance.pl "$commit"
+          done
