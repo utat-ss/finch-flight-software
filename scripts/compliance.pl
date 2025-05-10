@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+my $exit_code = 0;
+
 if (@ARGV < 1) {
     die "Usage: $0 <commit_hash> [<commit_hash> ...]\n";
 }
@@ -74,8 +76,11 @@ foreach my $commit (@ARGV) {
 
     if ($error) {
 	print "Commit $commit has issues. Please review the above messages.\n";
+	$exit_code = 1;
     } else {
         print "Commit $commit passed all checks.\n";
     }
     print "\n";
 }
+
+exit($exit_code);
