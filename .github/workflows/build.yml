@@ -5,7 +5,7 @@ on:
     types:
       - opened
       - reopened
-      - synchronized
+      - synchronize
   push:
     branches:
       - main
