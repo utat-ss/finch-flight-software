@@ -1,0 +1,6 @@
+board:
+  name: pay
+  full_name: FINCH PAY
+  vendor: The FINCH CubeSat Project Contributors
+  socs:
+    - name: stm32h742xx
