@@ -18,8 +18,8 @@ exit_code=0
 
 for i in $files; do
     echo "Running checkpatch on $i"
-    curl -s https://raw.githubusercontent.com/torvalds/linux/v6.14/scripts/checkpatch.pl | \
-    perl - --mailback --no-tree -f --emacs --summary-file --show-types \
+    chmod +x "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl"
+    perl "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl" --mailback --no-tree -f --emacs --summary-file --show-types \
          --ignore BRACES,PRINTK_WITHOUT_KERN_LEVEL,SPLIT_STRING,SPDX_LICENSE_TAG --max-line-length=100 "$i"
     ret=$?
     if [ $ret -ne 0 ]; then
