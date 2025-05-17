@@ -1,2 +1,2 @@
 config BOARD_OBC
-        select STM32H742XX
+        select STM32H743IIT6

@@ -30,27 +30,82 @@
 };
 
 &clk_hse {
-	clock-frequency = <DT_FREQ_M(24)>;
+	clock-frequency = <DT_FREQ_M(24)>; // Available from 4 to 48MHz
 	status = "okay";
 };
 
-&pll {
-	div-m = <12>;
-	mul-n = <85>;
-	div-p = <7>;
-	div-q = <2>;
-	div-r = <2>;
-	clocks = <&clk_hse>;
+&clk_lse {
+	clock-frequency = <DT_FREQ_K(32)>; // Available at 32KHz
 	status = "okay";
+};
+
+&clk_hsi {
+	clock-frequency = <DT_FREQ_M(64)>; // Available at 8, 16, 32, 64 MHz
+	status = "okay";
+};
+
+&clk_lsi {
+	clock-frequency = <DT_FREQ_K(32)>; // Available at ~32 KHz
+  status = "okay";
+};
+
+&clk_csi {
+	clock-frequency = <DT_FREQ_M(4)>; // Available at 4 MHz
+  status = "okay";
+};
+
+&clk_hsi48 {
+	clock-frequency = <DT_FREQ_M(48)>; // Available at 48 MHz
+  status = "okay";
+};
+
+// Main PLL for providing clock to CPU
+&pll1 {
+    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
+    mul-n = <170>;      // Multiply by 170: 2 MHz * 170 = 340 MHz VCO
+    div-p = <2>;        // SYSCLK: 340 MHz / 2 = 170 MHz
+    div-q = <4>;        // Peripheral clocks: 340 MHz / 4 = 85 MHz
+    div-r = <8>;        // Peripheral clocks: 340 MHz / 8 = 42.5 MHz
+    clocks = <&clk_hsi>;
+    status = "okay";
+};
+
+// 2 PLLs used to give kernal clock to peripherals
+&pll2 {
+    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
+    mul-n = <170>;      // Multiply by 170: 2 MHz * 170 = 340 MHz VCO
+    div-p = <2>;        // SYSCLK: 340 MHz / 2 = 170 MHz
+    div-q = <4>;        // Peripheral clocks: 340 MHz / 4 = 85 MHz
+    div-r = <8>;        // Peripheral clocks: 340 MHz / 8 = 42.5 MHz
+    clocks = <&clk_hse>;
+    status = "okay";
+};
+
+// Note that since we are using LSE, it will work even when the board is stopped
+&pll3 {
+    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
+    mul-n = <170>;      // Multiply by 170: 2 MHz * 170 = 340 MHz VCO
+    div-p = <2>;        // SYSCLK: 340 MHz / 2 = 170 MHz
+    div-q = <4>;        // Peripheral clocks: 340 MHz / 4 = 85 MHz
+    div-r = <8>;        // Peripheral clocks: 340 MHz / 8 = 42.5 MHz
+    clocks = <&clk_lse>;
+    status = "okay";
 };
 
 &rcc {
 	clocks = <&pll>;
 	clock-frequency = <DT_FREQ_M(170)>;
-	ahb-prescaler = <1>;
-	apb1-prescaler = <1>;
-	apb2-prescaler = <1>;
-	status = "okay";
+	std1cpre = <1>;       // CPU clock divider
+  hpre = <1>;         // AHB prescaler
+  d1ppre = <1>;       // APB3
+  d2ppre1 = <1>;      // APB1
+  d2ppre2 = <1>;      // APB2
+  d3ppre = <1>;       // APB4
+
+  pll2-clocks = <&pll2>;
+  pll3-clocks = <&pll3>;
+
+  status = "okay";
 };
 
 
