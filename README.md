@@ -51,3 +51,12 @@ cd finch-flight-software
 ```sh
 ./scripts/setup_west_workspace.sh
 ```
+
+## Set Zephyr Environment Variables
+```sh
+source ../zephyr/zephyr-env.sh
+```
+## Activate Python Virtual Environment
+```sh
+source ../.venv/bin/activate
+```
