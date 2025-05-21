@@ -5,7 +5,10 @@ manifest:
       url: https://github.com/zephyrproject-rtos/zephyr.git
       revision: v4.1.0
       path: zephyr
-      import: true
+      import:
+        name-allowlist:
+          - hal_stm32
+          - cmsis
       west-commands: scripts/west-commands.yml
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git
