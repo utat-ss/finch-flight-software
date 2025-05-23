@@ -52,9 +52,11 @@ foreach my $commit (@ARGV) {
 
     # 3. Check for a "Signed-off-by:" line (DCO check).
     my $found_signed_off = 0;
+    my $sign_off_line;
     foreach my $line (@lines) {
         if ($line =~ /Signed-off-by:/) {
             $found_signed_off = 1;
+            $sign_off_line = $line;
             last;
         }
     }
@@ -72,6 +74,26 @@ foreach my $commit (@ARGV) {
             $error = 1;
         }
         $line_number++;
+    }
+
+    # 5. Check that Git author identity matches the DCO identity
+    if ($found_signed_off) {
+        my ($sign_off_name, $sign_off_email)
+            = $sign_off_line =~ /Signed-off-by:\s*(.+?)\s+<([^>]+)>/;
+
+        unless (defined $sign_off_name && defined $sign_off_email) {
+            print "Error: A malformed DCO signoff line is found.\n";
+            $error = 1;
+        }
+        else {
+            chomp(my $author_name  = `git log -1 --format=%an $commit`);
+            chomp(my $author_email = `git log -1 --format=%ae $commit`);
+
+            if ($sign_off_name ne $author_name || $sign_off_email ne $author_email) {
+                print "Error: Git and DCO identity mismatch for $commit:\n";
+                $error = 1;
+            }
+        }
     }
 
     if ($error) {
