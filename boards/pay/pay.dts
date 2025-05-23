@@ -1,6 +1,6 @@
 /dts-v1/;
-#include <st/g4/stm32h743Xb.dtsi>
-#include <st/g4/stm32h743r(6-8-b)tx-pinctrl.dtsi>
+#include <st/g4/stm32h743Xi.dtsi>
+
 / {
 	model = "finch,pay";
 	compatible = "finch,pay";
@@ -12,12 +12,12 @@
 	leds: leds {
 		compatible = "gpio-leds";
 		act_led: led_0 {
-			gpios = <&gpioc 0 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpioc 14 GPIO_ACTIVE_HIGH>;
 			label = "LED0";
 		};
 
 		wrn_led: led_1 {
-			gpios = <&gpioc 1 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpioc 13 GPIO_ACTIVE_HIGH>;
 			label = "LED1";
 		};
 	};
@@ -56,7 +56,7 @@
 /* }; */
 
 &clk_hse {
-	clock-frequency = <DT_FREQ_M(48)>; // Available from 4 to 48MHz
+	clock-frequency = <DT_FREQ_M(24)>; // Available from 4 to 48MHz
 	status = "okay";
 };
 
@@ -64,7 +64,7 @@
 
 // Main PLL for providing clock to CPU
 &pll1 {
-    div-m = <24>;       // Divide HSE by 24: 48 MHz / 12 = 2 MHz
+    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
     mul-n = <240>;      // Multiply by 240: 2 MHz * 240 = 480 MHz VCO
     div-p = <1>;        // SYSCLK: 480 MHz / 1 = 480 MHz
     div-q = <4>;        // 480 MHz / 4 = 120 MHz
@@ -84,7 +84,6 @@
   d2ppre1 = <1>;      // APB1
   d2ppre2 = <1>;      // APB2
   d3ppre = <1>;       // APB4
-
   status = "okay";
 };
 
