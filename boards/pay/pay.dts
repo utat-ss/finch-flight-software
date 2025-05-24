@@ -1,5 +1,5 @@
 /dts-v1/;
-#include <st/g4/stm32h743Xi.dtsi>
+#include <st/h7/stm32h743Xi.dtsi>
 
 / {
 	model = "finch,pay";
@@ -12,12 +12,12 @@
 	leds: leds {
 		compatible = "gpio-leds";
 		act_led: led_0 {
-			gpios = <&gpioc 14 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiof 14 GPIO_ACTIVE_HIGH>;
 			label = "LED0";
 		};
 
 		wrn_led: led_1 {
-			gpios = <&gpioc 13 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
 			label = "LED1";
 		};
 	};
