@@ -123,4 +123,3 @@ void IdleCommandSequence() {
         PAY_EnterMode("Safety");
     }
 }
-
