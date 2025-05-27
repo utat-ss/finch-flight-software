@@ -32,6 +32,9 @@ jobs:
           - name: pay-nucleo
             board: nucleo_h743zi
             path: ./apps/pay
+          - name: eps-native
+            board: native_sim
+            path: ./apps/eps
 
     steps:
       - name: Checkout repository
