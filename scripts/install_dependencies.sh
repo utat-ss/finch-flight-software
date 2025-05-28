@@ -2,7 +2,7 @@
 
 set -e
 
-sudo apt update && sudo apt upgrade -y
+sudo apt update
 
 sudo apt install --no-install-recommends -y \
     git \
