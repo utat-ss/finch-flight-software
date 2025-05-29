@@ -1,125 +1,128 @@
-/** 
- * @startuml //need plantuml support to be able to generate diagram from mermaid code comments 
- *  
- * 
+/**
+ *  @file 
+ * @brief Idle command sequence implementation 
 */
 
-
-
-/** @file idle_sequence.c
- * @brief Implements the Idle command sequence 
-*/
-
-#include <stdio.h>
+#include "idle.h"
 #include <stdbool.h>
 
-/// System modules not acc used within but just tho keep track j'ai les adjoute
-typedef enum SystemModule{
-    MODULE_OPERATOR,
-    MODULE_MCC_GS,
-    MODULE_RF,
-    MODULE_OBC,
-    MODULE_ADCS, 
-    MODULE_PAY
-} SystemModule;
-
-
-/// rep command status
-typedef enum CommandStatus{
-    STATUS_SUCCESS,
-    STATUS_ERROR_COM
-} CommandStatus; 
-
-/// Orientation command ADCS
 /** 
- * @brief Orient satellite thru ADCS
- * @param attitude Target Attitude (eg Sun pointing)
- * @return STATUS_SUCCESS if completed
+ * @brief OBC transmits spacecraft orient command
 */
-CommandStatus ADCS_ExecuteOrient(const char* attitude) {
+int obc_command_orient(const char* attitude) {
+    // sim transmission
+    return 0;
+}
+
+/** 
+ * @brief Orient satellite through ADCS
+*/
+static bool adcs_execute_orient(const char* attitude) {
     // sim execution 
-    return STATUS_SUCCESS; // this oe has a feedback loop which is why it has the commandstatus types
+    return true; 
 }
 
-/// Checks system health on OBC 
 /** 
- * @brief Performs internal system health check 
+ * @brief Performs internal system health check on OBC 
 */
-void OBC_SystemHealthCheck(void){
-    //internal logic idk wtf goes on here sorry dawgs
+static bool obc_system_health_check(void) {
+    //add internal logic
+    return true;
 }
 
-/// OBC checks for scheduled tasks
-bool OBC_CheckScheduled(void) {
+/**
+ * @brief OBC checks for scheduled tasks
+*/
+static bool obc_check_scheduled(void) {
     // sim check
     return true;
 }
 
-/// OBC Schedules mode change
-void OBC_ScheduledModeChange(const char* mode, const char* params) {
-    // sim scheduling // im a little confused about the parameters, might need to ask ceci should it be (const char* param, const char* mode, const char* schedule)
+/**
+ * @brief OBC Schedules mode change
+*/ 
+int obc_scheduled_mode_change(const char* command_mode, const char* mode_params, const char* schedule) {
+    // sim succcessful scheduling
+    return 0;
 }
 
-/// OBC logs an error
-void OBC_LogError(const char* errorType) {
+/**
+ * @brief OBC logs error
+*/
+int obc_log_error(const char* errortype) {
     // Sim logging
+    return 0;
 }
 
-/// PAY enters specified mode 
-void PAY_EnterMode(const char* mode) {
+
+/**
+ * @brief if contact is not established between RF and OBC
+*/
+int rf_msg_error(const char* errortype) {
+    // sim transmission 
+    return 0;
+}
+
+/** 
+ * @brief PAY enters specified mode 
+*/
+int pay_enter_mode(const char* command_mode) {
     // sim mode entry 
+    return 0;
 }
 
-/// RF transmits command to OBC
-bool RF_TransmitCommand(const char* command, const char* params) {
+/**
+ * @brief RF transmits command to OBC
+*/
+static bool rf_transmit_command_modechange(const char* command_mode, const char* mode_params, const char* schedule) {
     // sim transmission
-    return true; // sim successful 
+    return true; 
 }
 
-/// Operator sends command to MCC/GS
-void Operator_SendCommand(const char* command, const char* params) {
-    // sim sending command
-}
-
-/// MCC sends command to RF
-void MCC_TransmitToRF(const char* command, const char* params) {
+/**
+ * @brief MCC transmits command to RF
+*/
+int mcc_transmit_command_modechange(const char* command_mode, const char* mode_params, const char* schedule) {
     // sim transmission
+    return 0;
 }
 
 /**
  * @brief Main loop handling the idle command sequence logic
 */
-void IdleCommandSequence() {
-    const char* attitude = "SunPointing";
-    const char* mode = "cmdMode";
+int idle_command_sequence(void) {
+    const char* attitude = "sunpointing";
+    const char* command_mode = "cmdmode";
+    const char* mode_params = "modeparams";
     const char* schedule = "scheduled";
+    const char* errortype = "comms";
 
-    // Orientation Sequence: OBC -> ADCS -> OBC
-    if (ADCS_ExecuteOrient(attitude) == STATUS_SUCCESS) {
-        OBC_SystemHealthCheck();
+    obc_command_orient("sunpointing");
+    if (adcs_execute_orient("sunpointing") == true) {
+        if (obc_system_health_check() == false) {
+            pay_enter_mode("safety");
+        } 
+    } else {
+        pay_enter_mode("safety");
     }
 
-    // Loop: Wait for ping (simplified as single iteration)
-    if (OBC_CheckScheduled()) {
+    if (obc_check_scheduled() == true) {
         // sim scheduled 
-        PAY_EnterMode("schMode");
-    }
+        pay_enter_mode("cmdmode");
+    } 
 
-    // Operator initiates a mode change command
-    Operator_SendCommand(mode, schedule);
-    MCC_TransmitToRF(mode, schedule);
+    mcc_transmit_command_modechange("cmdmode", "modeparams", "scheduled");
 
-    // RF transmits to OBC
-    if (RF_TransmitCommand(mode, schedule)) {
-        bool isScheduled = true; // or false to trigger immediate execution
-        if (isScheduled) {
-            OBC_ScheduledModeChange(mode, schedule);
+    if (rf_transmit_command_modechange("cmdmode", "modeparams", "scheduled") == true) {
+        if (obc_scheduled_mode_change("cmdmode", "modeparams", "scheduled") == true) {
+            pay_enter_mode("cmdmode");
         } else {
-            PAY_EnterMode(mode);
+            obc_log_error("comms");
         }
     } else {
-        // Error condition 
-        OBC_LogError("Communication");
-        PAY_EnterMode("Safety");
+        rf_msg_error("comms");
+        obc_log_error("comms");
+        pay_enter_mode("safety");
     }
+    return 0;
 }
