@@ -1,5 +1,5 @@
 /** @file idle.h
- * @brief Header for Idle Command Sequene Logic
+ * @brief Header for Idle Command Sequence Logic
 */
 
 #ifndef idle_h
