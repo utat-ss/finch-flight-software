@@ -1,3 +1,8 @@
+# This workflow checks if all of the commits in the PR are buildable.
+# Additionally it also checks the last commit pushed to main.
+# To preserve consistency between different boards, the commit list
+# is pulled first as a separate job.
+
 name: Build
 
 on:
@@ -15,9 +20,43 @@ permissions:
   pull-requests: read
 
 jobs:
+  get-commits:
+    runs-on: ubuntu-24.04
+    outputs:
+      commits: ${{ steps.get-commits-step.outputs.commits }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get a commit list
+        id: get-commits-step
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running on PR — checking all commits..."
+            commits=$(gh pr view ${{ github.event.number }} --repo ${{ github.repository }} --json commits --jq '.commits[].oid')
+          else
+            echo "Running on push to main — checking HEAD only..."
+            commits=$(git rev-parse HEAD)
+          fi
+
+          echo "get-commits job -- commit list:"
+          echo "$commits"
+
+          # store $commits in the output
+          echo 'commits<<EOF' >> "$GITHUB_OUTPUT"
+          echo "$commits" >> "$GITHUB_OUTPUT"
+          echo 'EOF' >> "$GITHUB_OUTPUT"
+
   build:
+    needs: get-commits
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: obc-native
@@ -39,6 +78,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install dependencies
         run: |
@@ -55,8 +96,43 @@ jobs:
           chmod +x ./scripts/setup_west_workspace.sh
           ./scripts/setup_west_workspace.sh
 
-      - name: Build app
+      - name: Builds
         run: |
+          set +e
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
-          west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+          failed_commits=""
+
+          echo "Board: ${{ matrix.board }} Path: ${{ matrix.path }}"
+          echo "Commit list: $commits"
+
+          for commit in $commits; do
+            echo "::group::Build on a commit $commit"
+
+            git checkout $commit || { echo "Failed: git checkout $commit"; exit 1; }
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+            build_status=$?
+
+            echo "::endgroup::"
+
+            if [ $build_status -eq 0 ]; then
+              echo "Successfully built a commit $commit."
+            else
+              echo "Failed to build a commit $commit."
+              failed_commits+="$commit "
+            fi
+          done
+
+          if [ -z "$failed_commits" ]; then
+            echo -n "All commits are built successfully for a "
+            echo "board: ${{ matrix.board }}, path: ${{ matrix.path }}."
+            exit 0
+          else
+            echo -n "One or more commits failed for a "
+            echo "board: ${{ matrix.board }}, path: ${{ matrix.path }}!"
+            echo "Failed commits: $failed_commits."
+            exit 1
+          fi
+
+        env:
+          commits: ${{ needs.get-commits.outputs.commits }}
