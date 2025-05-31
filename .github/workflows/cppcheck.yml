@@ -1,0 +1,33 @@
+name: cppcheck
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cppcheck
+
+      - name: Run cppcheck
+        working-directory: ${{ github.workspace }}
+        run: |
+          chmod +x ./scripts/run_cppcheck.sh
+          ./scripts/run_cppcheck.sh
