@@ -1,0 +1,12 @@
+&spi1 {
+    status = "okay";
+    cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>;
+    w25q64: flash@0 {
+        compatible = "jedec,spi-nor";
+        reg = <0>;
+        spi-max-frequency = <8000000>;
+        label = "W25Q64";
+        jedec-id = [ef 40 17];
+        size = <0x800000>;
+    };
+};
