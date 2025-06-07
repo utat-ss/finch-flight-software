@@ -7,7 +7,8 @@ set -e
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-env.sh"
 
-files=$(find "${FINCH_FLIGHT_SOFTWARE_ROOT}" -type f \( -name "*.[ch]" \) ! -path "*/build/*")
+files=$(find "${FINCH_FLIGHT_SOFTWARE_ROOT}" -type f \
+    \( -name "*.[ch]" -o -name "*.dts" -o -name "*.dtsi" -o -name "*.overlay" \) ! -path "*/build/*")
 
 echo "Found the following files to be checked:"
 for i in $files; do
