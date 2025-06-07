@@ -1,0 +1,86 @@
+/dts-v1/;
+#include <st/h7/stm32h743Xi.dtsi>
+
+/ {
+	model = "finch,pay";
+	compatible = "finch,pay";
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+	leds: leds {
+		compatible = "gpio-leds";
+		act_led: led_0 {
+			gpios = <&gpiof 14 GPIO_ACTIVE_HIGH>;
+			label = "LED0";
+		};
+
+		wrn_led: led_1 {
+			gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
+			label = "LED1";
+		};
+	};
+	aliases {
+		led0 = &act_led;
+		actled = &act_led;
+		led1 = &wrn_led;
+		wrnled = &wrn_led;
+	};
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(24)>; // Available from 4 to 48MHz
+	status = "okay";
+};
+
+&pll1 {
+    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
+    mul-n = <240>;      // Multiply by 240: 2 MHz * 240 = 480 MHz VCO
+    div-p = <1>;        // SYSCLK: 480 MHz / 1 = 480 MHz
+    div-q = <4>;        // 480 MHz / 4 = 120 MHz
+    div-r = <10>;       // 480 MHz / 10 = 48 MHz
+    clocks = <&clk_hse>;
+    status = "okay";
+};
+
+&rcc {
+	clocks = <&pll1 0>;   // pllx_p_ck
+	clock-frequency = <DT_FREQ_M(480)>;
+	std1cpre = <1>;       // CPU clock divider
+  hpre = <1>;         // AHB prescaler
+  d1ppre = <1>;       // APB3
+  d2ppre1 = <1>;      // APB1
+  d2ppre2 = <1>;      // APB2
+  d3ppre = <1>;       // APB4
+  status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		slot0_partition: partition@0 {
+			label = "image-0";
+			reg = <0x00000000 DT_SIZE_K(128)>;
+		};
+	};
+};
+
+&pinctrl {
+	sdmmc1_clk: sdmmc1_clk {
+		pinmux = <STM32_PINMUX('C', 12, AF12)>;
+	};
+	sdmmc1_cmd: sdmmc1_cmd {
+		pinmux = <STM32_PINMUX('D', 2, AF12)>;
+	};
+};
+
+&sdmmc1 {
+	pinctrl-0 = <&sdmmc1_clk
+				 &sdmmc1_cmd>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
