@@ -57,5 +57,5 @@ jobs:
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
           APP_PATH="./apps/${{ matrix.path }}"
-          BOARD_PATH="./board/${{ matrix.path }}/${{ matrix.board }}.overlay"
+          BOARD_PATH="../../board/${{ matrix.path }}/${{ matrix.board }}.overlay"
           west -v build -b ${{ matrix.board }} $APP_PATH -p -- -DOVERLAY_CONFIG=$BOARD_PATH
