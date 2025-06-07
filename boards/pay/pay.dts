@@ -98,3 +98,20 @@
 		};
 	};
 };
+
+&pinctrl {
+	sdmmc1_clk: sdmmc1_clk {
+		pinmux = <STM32_PINMUX('C', 12, AF12)>;
+	};
+	sdmmc1_cmd: sdmmc1_cmd {
+		pinmux = <STM32_PINMUX('D', 2, AF12)>;
+	};
+};
+
+&sdmmc1 {
+	pinctrl-0 = <&sdmmc1_clk
+				 &sdmmc1_cmd>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
