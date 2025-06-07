@@ -22,19 +22,16 @@ jobs:
         include:
           - name: obc-native
             board: native_sim
-            path: ./apps/obc
+            path: obc
           - name: obc-nucleo
             board: nucleo_g431rb
-            path: ./apps/obc
+            path: obc
           - name: pay-native
             board: native_sim
-            path: ./apps/pay
+            path: pay
           - name: pay-nucleo
             board: nucleo_h743zi
-            path: ./apps/pay
-          - name: eps-native
-            board: native_sim
-            path: ./apps/eps
+            path: pay
 
     steps:
       - name: Checkout repository
@@ -59,4 +56,6 @@ jobs:
         run: |
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
-          west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+          APP_PATH="./apps/${{ matrix.path }}"
+          BOARD_PATH="./board/${{ matrix.path }}/${{ matrix.board }}.overlay"
+          west -v build -b ${{ matrix.board }} $APP_PATH -p -- -DOVERLAY_CONFIG=$BOARD_PATH
