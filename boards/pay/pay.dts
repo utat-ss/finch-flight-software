@@ -29,40 +29,11 @@
 	};
 };
 
-
-/* &clk_lse { */
-/* 	clock-frequency = <DT_FREQ_K(32)>; // Available at 32KHz */
-/* 	status = "okay"; */
-/* }; */
-
-/* &clk_hsi { */
-/* 	clock-frequency = <DT_FREQ_M(64)>; // Available at 8, 16, 32, 64 MHz */
-/* 	status = "okay"; */
-/* }; */
-
-/* &clk_lsi { */
-/* 	clock-frequency = <DT_FREQ_K(32)>; // Available at ~32 KHz */
-/*   status = "okay"; */
-/* }; */
-
-/* &clk_csi { */
-/* 	clock-frequency = <DT_FREQ_M(4)>; // Available at 4 MHz */
-/*   status = "okay"; */
-/* }; */
-
-/* &clk_hsi48 { */
-/* 	clock-frequency = <DT_FREQ_M(48)>; // Available at 48 MHz */
-/*   status = "okay"; */
-/* }; */
-
 &clk_hse {
 	clock-frequency = <DT_FREQ_M(24)>; // Available from 4 to 48MHz
 	status = "okay";
 };
 
-// https://docs.zephyrproject.org/latest/build/dts/api/bindings/clock/st%2Cstm32h7-pll-clock.html#dtbinding-st-stm32h7-pll-clock
-
-// Main PLL for providing clock to CPU
 &pll1 {
     div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
     mul-n = <240>;      // Multiply by 240: 2 MHz * 240 = 480 MHz VCO
@@ -73,8 +44,6 @@
     status = "okay";
 };
 
-
-// https://docs.zephyrproject.org/latest/build/dts/api/bindings/clock/st%2Cstm32h7-rcc.html#dtbinding-st-stm32h7-rcc
 &rcc {
 	clocks = <&pll1 0>;   // pllx_p_ck
 	clock-frequency = <DT_FREQ_M(480)>;
