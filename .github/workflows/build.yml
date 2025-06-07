@@ -18,6 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: obc-native
@@ -39,6 +40,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install dependencies
         run: |
@@ -55,8 +58,49 @@ jobs:
           chmod +x ./scripts/setup_west_workspace.sh
           ./scripts/setup_west_workspace.sh
 
-      - name: Build app
+      - name: Builds
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -e
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
-          west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running on PR — checking all commits..."
+            commits=$(gh pr view ${{ github.event.number }} --repo ${{ github.repository }} --json commits --jq '.commits[].oid')
+          else
+            echo "Running on push to main — checking HEAD only..."
+            commits=$(git rev-parse HEAD)
+          fi
+
+          echo "Commit list: $commits"
+
+          failed_commits=""
+
+          for commit in $commits; do
+            echo "::group::Building $commit"
+
+            git checkout $commit
+            rm -rf build/
+            set +e
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+            build_status=$?
+            set -e
+
+            echo "::endgroup::"
+
+            if [ $build_status -ne 0 ]; then
+              echo "Failed to build $commit."
+              failed_commits+="$commit "
+            fi
+          done
+
+          echo "Board: ${{ matrix.board }}, path: ${{ matrix.path }}."
+          if [ -z "$failed_commits" ]; then
+            echo "All commits are built successfully."
+            exit 0
+          else
+            echo "One or more commits failed: $failed_commits."
+            exit 1
+          fi
