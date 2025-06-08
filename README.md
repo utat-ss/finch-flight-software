@@ -2,14 +2,14 @@
 
 This guide covers setup on **Ubuntu 24.04 LTS** with **x86_64** processor.
 
-## System Update
+### System Update
 
 ```sh
 sudo apt update
 sudo apt upgrade
 ```
 
-## Make an Empty Directory
+### Make an Empty Directory
 
 ```sh
 mkdir ~/finch
@@ -18,7 +18,7 @@ cd ~/finch
 
 **Note:** This is because the west manifest will populate one directory above this repository.
 
-## Clone This Repository
+### Clone This Repository
 
 Using **HTTPS**:
 
@@ -34,29 +34,29 @@ git clone git@github.com:utat-ss/finch-flight-software.git
 cd finch-flight-software
 ```
 
-## Install Dependencies
+### Install Dependencies
 
 ```sh
 ./scripts/install_dependencies.sh
 ```
 
-## Set Up Python Virtual Environment
+### Set Up Python Virtual Environment
 
 ```sh
 ./scripts/setup_python_venv.sh
 ```
 
-## Set Up West Workspace
+### Set Up West Workspace
 
 ```sh
 ./scripts/setup_west_workspace.sh
 ```
 
-## Set Zephyr Environment Variables
+### Set Zephyr Environment Variables
 ```sh
 source ../zephyr/zephyr-env.sh
 ```
-## Activate Python Virtual Environment
+### Activate Python Virtual Environment
 ```sh
 source ../.venv/bin/activate
 ```
