@@ -1,0 +1,145 @@
+/*
+ * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	gpio_pins
+	{
+		compatible = "gpio-keys";
+
+		gpioa_0: gpioa_0 {
+			gpios = <&gpioa 0 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_2: gpioa_2 {
+			gpios = <&gpioa 2 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_3: gpioa_3 {
+			gpios = <&gpioa 3 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_4: gpioa_4 {
+			gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_5: gpioa_5 {
+			gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_6: gpioa_6 {
+			gpios = <&gpioa 6 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_7: gpioa_7 {
+			gpios = <&gpioa 7 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_8: gpioa_8 {
+			gpios = <&gpioa 8 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_9: gpioa_9 {
+			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_10: gpioa_10 {
+			gpios = <&gpioa 10 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_11: gpioa_11 {
+			gpios = <&gpioa 11 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_12: gpioa_12 {
+			gpios = <&gpioa 12 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_13: gpioa_13 {
+			gpios = <&gpioa 13 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_14: gpioa_14 {
+			gpios = <&gpioa 14 GPIO_ACTIVE_HIGH>;
+		};
+		gpioa_15: gpioa_15 {
+			gpios = <&gpioa 15 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_0: gpiob_0 {
+			gpios = <&gpiob 0 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_1: gpiob_1 {
+			gpios = <&gpiob 1 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_2: gpiob_2 {
+			gpios = <&gpiob 2 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_3: gpiob_3 {
+			gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_4: gpiob_4 {
+			gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_5: gpiob_5 {
+			gpios = <&gpiob 5 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_6: gpiob_6 {
+			gpios = <&gpiob 6 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_7: gpiob_7 {
+			gpios = <&gpiob 7 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_9: gpiob_9 {
+			gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_10: gpiob_10 {
+			gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_11: gpiob_11 {
+			gpios = <&gpiob 11 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_12: gpiob_12 {
+			gpios = <&gpiob 12 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_13: gpiob_13 {
+			gpios = <&gpiob 13 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_14: gpiob_14 {
+			gpios = <&gpiob 14 GPIO_ACTIVE_HIGH>;
+		};
+		gpiob_15: gpiob_15 {
+			gpios = <&gpiob 15 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_0: gpioc_0 {
+			gpios = <&gpioc 0 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_1: gpioc_1 {
+			gpios = <&gpioc 1 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_2: gpioc_2 {
+			gpios = <&gpioc 2 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_3: gpioc_3 {
+			gpios = <&gpioc 3 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_4: gpioc_4 {
+			gpios = <&gpioc 4 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_5: gpioc_5 {
+			gpios = <&gpioc 5 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_6: gpioc_6 {
+			gpios = <&gpioc 6 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_7: gpioc_7 {
+			gpios = <&gpioc 7 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_8: gpioc_8 {
+			gpios = <&gpioc 8 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_9: gpioc_9 {
+			gpios = <&gpioc 9 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_10: gpioc_10 {
+			gpios = <&gpioc 10 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_11: gpioc_11 {
+			gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
+		};
+		gpioc_12: gpioc_12 {
+			gpios = <&gpioc 12 GPIO_ACTIVE_HIGH>;
+		};
+		gpiod_2: gpiod_2 {
+			gpios = <&gpiod 2 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
