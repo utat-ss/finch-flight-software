@@ -27,12 +27,14 @@ jobs:
           - name: obc-nucleo
             board: nucleo_g431rb
             path: ./apps/obc
+            overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
           - name: pay-native
             board: native_sim
             path: ./apps/pay
           - name: pay-nucleo
             board: nucleo_h743zi
             path: ./apps/pay
+            overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
           - name: eps-native
             board: native_sim
             path: ./apps/eps
@@ -65,6 +67,7 @@ jobs:
           set -e
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
+          source finch-flight-software-env.sh
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Running on PR — checking all commits..."
@@ -76,6 +79,11 @@ jobs:
 
           echo "Commit list: $commits"
 
+          EXTRA_ARGS=""
+          if [ -f "${{ matrix.overlay }}" ]; then
+            EXTRA_ARGS="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
+          fi
+
           failed_commits=""
 
           for commit in $commits; do
@@ -84,7 +92,7 @@ jobs:
             git checkout $commit
             rm -rf build/
             set +e
-            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p $EXTRA_ARGS
             build_status=$?
             set -e
 
