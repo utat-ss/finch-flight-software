@@ -4,3 +4,4 @@ board:
   vendor: The FINCH CubeSat Project Contributors
   socs:
     - name: stm32h743xx
+

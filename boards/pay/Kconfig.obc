@@ -1,2 +1,3 @@
 config BOARD_OBC
-        select STM32H743XX
+        select SOC_STM32H743XX
+

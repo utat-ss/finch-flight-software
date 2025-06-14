@@ -30,29 +30,29 @@
 };
 
 &clk_hse {
-	clock-frequency = <DT_FREQ_M(24)>; // Available from 4 to 48MHz
+	clock-frequency = <DT_FREQ_M(24)>; 
 	status = "okay";
 };
 
 &pll1 {
-    div-m = <12>;       // Divide HSE by 12: 24 MHz / 12 = 2 MHz
-    mul-n = <240>;      // Multiply by 240: 2 MHz * 240 = 480 MHz VCO
-    div-p = <1>;        // SYSCLK: 480 MHz / 1 = 480 MHz
-    div-q = <4>;        // 480 MHz / 4 = 120 MHz
-    div-r = <10>;       // 480 MHz / 10 = 48 MHz
+    div-m = <12>;
+    mul-n = <240>;
+    div-p = <1>;
+    div-q = <4>;
+    div-r = <10>;
     clocks = <&clk_hse>;
     status = "okay";
 };
 
 &rcc {
-	clocks = <&pll1 0>;   // pllx_p_ck
+	clocks = <&pll1 0>;
 	clock-frequency = <DT_FREQ_M(480)>;
-	std1cpre = <1>;       // CPU clock divider
-  hpre = <1>;         // AHB prescaler
-  d1ppre = <1>;       // APB3
-  d2ppre1 = <1>;      // APB1
-  d2ppre2 = <1>;      // APB2
-  d3ppre = <1>;       // APB4
+	std1cpre = <1>;
+  hpre = <1>;
+  d1ppre = <1>;
+  d2ppre1 = <1>;
+  d2ppre2 = <1>;
+  d3ppre = <1>;
   status = "okay";
 };
 
@@ -77,10 +77,11 @@
 	};
 };
 
-&sdmmc1 {
-	pinctrl-0 = <&sdmmc1_clk
-				 &sdmmc1_cmd>;
-	pinctrl-names = "default";
+/* &sdmmc1 { */
+/* 	pinctrl-0 = <&sdmmc1_clk */
+/* 				 &sdmmc1_cmd>; */
+/* 	pinctrl-names = "default"; */
+/**/
+/* 	status = "okay"; */
+/* }; */
 
-	status = "okay";
-};
