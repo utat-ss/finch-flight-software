@@ -21,9 +21,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: obc-native
-            board: native_sim
-            path: ./apps/obc
           - name: obc-nucleo
             board: nucleo_g431rb
             path: ./apps/obc
