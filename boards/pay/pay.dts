@@ -1,0 +1,70 @@
+/dts-v1/;
+#include <st/h7/stm32h743Xi.dtsi>
+
+/ {
+        model = "finch,pay";
+        compatible = "finch,pay";
+        chosen {
+                zephyr,sram = &sram0;
+                zephyr,flash = &flash0;
+                zephyr,code-partition = &slot0_partition;
+        };
+        leds: leds {
+                compatible = "gpio-leds";
+                act_led: led_0 {
+                        gpios = <&gpiof 14 GPIO_ACTIVE_HIGH>;
+                        label = "LED0";
+                };
+
+                wrn_led: led_1 {
+                        gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
+                        label = "LED1";
+                };
+        };
+        aliases {
+                led0 = &act_led;
+                actled = &act_led;
+                led1 = &wrn_led;
+                wrnled = &wrn_led;
+        };
+};
+
+&clk_hse {
+        clock-frequency = <DT_FREQ_M(24)>; 
+        status = "okay";
+};
+
+&pll1 {
+        div-m = <12>;
+        mul-n = <240>;
+        div-p = <1>;
+        div-q = <4>;
+        div-r = <10>;
+        clocks = <&clk_hse>; 
+        status = "okay";
+};
+
+&rcc {
+        clocks = <&pll1 0>;
+        clock-frequency = <DT_FREQ_M(480)>;
+        std1cpre = <1>;
+        hpre = <1>;
+        d1ppre = <1>;
+        d2ppre1 = <1>;
+        d2ppre2 = <1>;
+        d3ppre = <1>;
+        status = "okay";
+};
+
+&flash0 {
+        partitions {
+                compatible = "fixed-partitions";
+                #address-cells = <1>;
+                #size-cells = <1>;
+                slot0_partition: partition@0 {
+                        label = "image-0";
+                        reg = <0x00000000 DT_SIZE_K(128)>;
+                };
+        };
+};
+

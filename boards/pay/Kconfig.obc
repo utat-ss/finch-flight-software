@@ -1,0 +1,3 @@
+config BOARD_OBC
+        select SOC_STM32H743XX
+
