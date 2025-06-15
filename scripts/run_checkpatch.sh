@@ -24,7 +24,7 @@ for i in $files; do
     echo "Running checkpatch on $i"
     chmod +x "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl"
     perl "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl" --mailback --no-tree -f --emacs --summary-file --show-types \
-         --ignore BRACES,PRINTK_WITHOUT_KERN_LEVEL,SPLIT_STRING,SPDX_LICENSE_TAG --max-line-length=100 "$i"
+         --ignore BRACES,PRINTK_WITHOUT_KERN_LEVEL,SPLIT_STRING,SPDX_LICENSE_TAG,UNNECESSARY_ELSE --max-line-length=100 "$i"
     ret=$?
     if [ $ret -ne 0 ]; then
          exit_code=1
