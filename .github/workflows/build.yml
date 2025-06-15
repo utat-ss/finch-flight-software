@@ -21,8 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: obc-native
-            board: native_sim
+          - name: obc-obc
+            board: obc
             path: ./apps/obc
           - name: obc-nucleo
             board: nucleo_g431rb
@@ -78,13 +78,15 @@ jobs:
 
           failed_commits=""
 
+          source finch-flight-software-env.sh
+
           for commit in $commits; do
             echo "::group::Building $commit"
 
             git checkout $commit
             rm -rf build/
             set +e
-            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p -- -DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT
             build_status=$?
             set -e
 
