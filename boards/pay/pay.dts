@@ -40,15 +40,15 @@
 
 &clk_hse {
 	hse-bypass;
-	clock-frequency = <DT_FREQ_M(8)>;
+	clock-frequency = <DT_FREQ_M(24)>;
 	status = "okay";
 };
 
 &pll {
-	div-m = <2>;
+	div-m = <12>;
 	mul-n = <240>;
 	div-p = <2>;
-	div-q = <2>;
+	div-q = <4>;
 	div-r = <2>;
 	clocks = <&clk_hse>;
 	status = "okay";
@@ -56,7 +56,7 @@
 
 &rcc {
 	clocks = <&pll>;
-	clock-frequency = <DT_FREQ_M(480)>;
+	clock-frequency = <DT_FREQ_M(240)>;
 	d1cpre = <1>;
 	hpre = <2>;
 	d1ppre = <2>;

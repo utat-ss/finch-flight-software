@@ -35,6 +35,9 @@ jobs:
             board: nucleo_h743zi
             path: ./apps/pay
             overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
+          - name: pay-pcb
+            board: pay
+            path: ./apps/pay
           - name: eps-native
             board: native_sim
             path: ./apps/eps
@@ -86,13 +89,15 @@ jobs:
 
           failed_commits=""
 
+          source finch-flight-software-env.sh
+
           for commit in $commits; do
             echo "::group::Building $commit"
 
             git checkout $commit
             rm -rf build/
             set +e
-            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p $EXTRA_ARGS
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p $EXTRA_ARGS -DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT
             build_status=$?
             set -e
 
