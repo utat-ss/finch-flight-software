@@ -9,5 +9,6 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-e
 
 cppcheck --enable=all \
     --suppress=missingIncludeSystem \
+    -i"${FINCH_FLIGHT_SOFTWARE_ROOT}/build" \
     --error-exitcode=1 \
     "${FINCH_FLIGHT_SOFTWARE_ROOT}"
