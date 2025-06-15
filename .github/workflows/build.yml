@@ -33,6 +33,9 @@ jobs:
           - name: pay-nucleo
             board: nucleo_h743zi
             path: ./apps/pay
+          - name: pay-pcb
+            board: pay
+            path: ./apps/pay
           - name: eps-native
             board: native_sim
             path: ./apps/eps
@@ -78,13 +81,15 @@ jobs:
 
           failed_commits=""
 
+          source finch-flight-software-env.sh
+
           for commit in $commits; do
             echo "::group::Building $commit"
 
             git checkout $commit
             rm -rf build/
             set +e
-            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p
+            west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p -- -DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT
             build_status=$?
             set -e
 
