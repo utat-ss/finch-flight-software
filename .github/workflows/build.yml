@@ -35,6 +35,9 @@ jobs:
             board: nucleo_h743zi
             path: ./apps/pay
             overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
+          - name: pay-pcb
+            board: pay
+            path: ./apps/pay
           - name: eps-native
             board: native_sim
             path: ./apps/eps
