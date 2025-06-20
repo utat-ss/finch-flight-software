@@ -79,9 +79,12 @@
 
 &sdmmc1 {
     status = "okay";
+    disk-name = "SD";
     pinctrl-0 = <&sdmmc1_d0_pe8 &sdmmc1_d1_pe9 &sdmmc1_d2_pe10
                  &sdmmc1_d3_pe11 &sdmmc1_ck_pe12 &sdmmc1_cmd_pe7>;
     pinctrl-names = "default";
+    resets = <&rcc STM32H7_AHB3_RESET(SDMMC1)>;
+    reset-names = "sdmmc1";
     bus-width = <4>;   
     cd-gpios = <&gpioc 13 GPIO_ACTIVE_LOW>;  
     power-gpios = <&gpiod 2 GPIO_ACTIVE_HIGH>; 
