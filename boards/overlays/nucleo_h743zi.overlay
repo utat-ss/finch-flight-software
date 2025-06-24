@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/pinctrl/stm32-pinctrl-common.h>
+#include <zephyr/dt-bindings/pinctrl/stm32-pinctrl.h>
+
+/ {
+	model = "finch,pay";
+	compatible = "finch,pay";
+};
+
+&i2c1 {
+    status = "okay";
+    dmas = <&dmamux1 0 33 0x400>,  /* Channel 0, I2C1_RX */
+           <&dmamux1 1 34 0x400>;  /* Channel 1, I2C1_TX */
+    dma-names = "rx", "tx";
+
+    ov7670: ov7670@21 {
+        compatible = "ovti,ov7670";
+        reg = <0x21>;
+
+        port {
+            ov7670_ep_out: endpoint {
+                remote-endpoint-label = "dcmi_ep_in";
+            };
+        };
+    };
+};
+
+&dcmi {
+    status = "okay";
+    pinctrl-0 = <
+            &dcmi_hsync_pa4 
+            &dcmi_pixclk_pa6 
+            &dcmi_vsync_pg9
+            &dcmi_d0_pa9 
+            &dcmi_d1_pa10 
+            &dcmi_d2_pg10
+            &dcmi_d3_pc9 
+            &dcmi_d4_pc11 
+            &dcmi_d5_pd3
+            &dcmi_d6_pe5 
+            &dcmi_d7_pe6
+            &dcmi_d8_pc10
+            &dcmi_d9_pc12
+            &dcmi_d10_pb5
+            &dcmi_d11_pd2
+    >;
+    pinctrl-names = "default";
+
+    dmas = <&dmamux1 2 75 0x400>;  /* Channel 2, DCMI request line */
+    dma-names = "rx";
+
+    port {
+        dcmi_ep_in: endpoint {
+            remote-endpoint-label = "ov7670_ep_out";
+            bus-width = <12>;
+            hsync-active = <0>;
+            vsync-active = <0>;
+            pclk-sample = <1>;
+        };
+    };
+};
+
+&dma1 {
+    status = "okay";
+};
+
+&dmamux1 {
+	status = "okay";
+};

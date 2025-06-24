@@ -11,69 +11,60 @@
 / {
 	model = "finch,pay";
 	compatible = "finch,pay";
-
-	chosen {
-		zephyr,sram = &sram0;
-		zephyr,flash = &flash0;
-		zephyr,code-partition = &slot0_partition;
-	};
-
-	leds: leds {
-		compatible = "gpio-leds";
-		act_led: led_0 {
-			gpios = <&gpiof 14 GPIO_ACTIVE_HIGH>;
-			label = "LED0";
-		};
-		wrn_led: led_1 {
-			gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
-			label = "LED1";
-		};
-	};
-
-	aliases {
-		led0 = &act_led;
-		actled = &act_led;
-		led1 = &wrn_led;
-		wrnled = &wrn_led;
-	};
 };
 
-&clk_hse {
-	hse-bypass;
-	clock-frequency = <DT_FREQ_M(24)>;
-	status = "okay";
+&i2c1 {
+    status = "okay";
+
+    ov2640: ov2640@30 {
+        compatible = "ovti,ov2640";
+        reg = <0x30>;
+
+        port {
+            ov2640_ep_out: endpoint {
+                remote-endpoint = <&dcmi_ep_in>;
+            };
+        };
+    };
 };
 
-&pll {
-	div-m = <12>;
-	mul-n = <240>;
-	div-p = <2>;
-	div-q = <4>;
-	div-r = <2>;
-	clocks = <&clk_hse>;
-	status = "okay";
-};
+&dcmi {
+    status = "okay";
+    pinctrl-0 = <&dcmi_pins>;
+    pinctrl-names = "default";
 
-&rcc {
-	clocks = <&pll>;
-	clock-frequency = <DT_FREQ_M(240)>;
-	d1cpre = <1>;
-	hpre = <2>;
-	d1ppre = <2>;
-	d2ppre1 = <2>;
-	d2ppre2 = <2>;
-	d3ppre = <2>;
-};
+    port {
+        dcmi_ep_in: endpoint {
+            remote-endpoint-label = "ov2640_ep_out";
+            bus-width = <8>;
+            hsync-active = <0>;
+            vsync-active = <0>;
+            pclk-sample = <1>;
+        };
+    };
+}
 
-&flash0 {
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-		slot0_partition: partition@0 {
-			label = "image-0";
-			reg = <0x00000000 DT_SIZE_K(128)>;
-		};
-	};
+&pinctrl {
+    dcmi_pins : dcmi_pins {
+        pinctrl-names = "default";
+        pinmux = <
+            STM32_PINMUX('A', 6, STM32_AF13)  //clk
+            STM32_PINMUX('H', 8, STM32_AF13)  //hsync
+            STM32_PINMUX('I', 5, STM32_AF13)  //vsync
+            STM32_PINMUX('H', 9, STM32_AF13)  //d0
+            STM32_PINMUX('H', 10, STM32_AF13) //d1
+            STM32_PINMUX('H', 11, STM32_AF13) //d2
+            STM32_PINMUX('H', 12, STM32_AF13) //d3
+            STM32_PINMUX('E', 4, STM32_AF13)  //d4
+            STM32_PINMUX('I', 4, STM32_AF13)  //d5
+            STM32_PINMUX('E', 5, STM32_AF13)  //d6
+            STM32_PINMUX('E', 6, STM32_AF13)  //d7
+            STM32_PINMUX('H', 6, STM32_AF13)  //d8
+            STM32_PINMUX('H', 7, STM32_AF13)  //d9
+            STM32_PINMUX('I', 3, STM32_AF13)  //d10
+            STM32_PINMUX('H', 15, STM32_AF13) //d11
+            STM32_PINMUX('G', 6, STM32_AF13)  //d12
+            STM32_PINMUX('G', 7, STM32_AF13)  //d13
+        >;
+    };
 };
-
