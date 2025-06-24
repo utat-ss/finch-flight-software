@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <st/h7/stm32h743Xi.dtsi>
+
+/ {
+	model = "finch,pay";
+	compatible = "finch,pay";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+
+	leds: leds {
+		compatible = "gpio-leds";
+		act_led: led_0 {
+			gpios = <&gpiof 14 GPIO_ACTIVE_HIGH>;
+			label = "LED0";
+		};
+		wrn_led: led_1 {
+			gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
+			label = "LED1";
+		};
+	};
+
+	aliases {
+		led0 = &act_led;
+		actled = &act_led;
+		led1 = &wrn_led;
+		wrnled = &wrn_led;
+	};
+};
+
+&clk_hse {
+	hse-bypass;
+	clock-frequency = <DT_FREQ_M(24)>;
+	status = "okay";
+};
+
+&pll {
+	div-m = <12>;
+	mul-n = <240>;
+	div-p = <2>;
+	div-q = <4>;
+	div-r = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(240)>;
+	d1cpre = <1>;
+	hpre = <2>;
+	d1ppre = <2>;
+	d2ppre1 = <2>;
+	d2ppre2 = <2>;
+	d3ppre = <2>;
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		slot0_partition: partition@0 {
+			label = "image-0";
+			reg = <0x00000000 DT_SIZE_K(128)>;
+		};
+	};
+};
+
