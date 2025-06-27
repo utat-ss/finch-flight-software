@@ -1,11 +1,10 @@
-#include <finch/ccsds123b/encoder.h>
-#include <finch/ccsds123b/predictor.h>
 #include <finch/ccsds123b/constants.h>
-
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <finch/ccsds123b/encoder.h>
 #include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#include "finch/ccsds123b/util.h"
 
 static void compute_k(int accumulator, int counter, int *k)
 {

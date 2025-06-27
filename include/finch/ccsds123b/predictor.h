@@ -3,15 +3,9 @@
 
 #include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/util.h>
+#include <finch/ccsds123b/local_diffs.h>
 
 #include <stdint.h>
-
-typedef struct {
-	int32_t central;
-	int32_t north;
-	int32_t west;
-	int32_t northwest;
-} LocalDiff;
 
 /*
  * Returns the prediction of dimension N
@@ -54,7 +48,6 @@ int32_t compute_pred_cent_local_diff(
 	int32_t z,
 	int32_t y,
 	int32_t x,
-	LocalDiff local_diffs[100][100][100],
 	const int32_t *weights
 );
 

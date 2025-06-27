@@ -1,16 +1,14 @@
-#include <finch/ccsds123b/predictor.h>
-#include <finch/ccsds123b/image.h>
-#include <finch/ccsds123b/util.h>
 #include <finch/ccsds123b/constants.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include <finch/ccsds123b/image.h>
+#include <finch/ccsds123b/local_diffs.h>
+#include <finch/ccsds123b/predictor.h>
+#include <finch/ccsds123b/util.h>
 #include <math.h>
-#include <inttypes.h>
-#include <zephyr/kernel.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-LocalDiff local_diffs[100][100][100];
+#include "zephyr/sys/printk.h"
+#include <stdio.h>
 
 static int32_t sgn_pos(int x)
 {
@@ -40,8 +38,9 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 		for (int y = 0, t = 0; y < N->y; ++y) {
 			for (int x = 0; x < N->x; ++x, ++t) {
 				int32_t local_sum = compute_local_sum(z, y, x);
-
-				local_diffs[z][y][x] = compute_local_diffs(z, y, x, local_sum);
+				
+				LocalDiff l = compute_local_diffs(z, y, x, local_sum);
+				update_local_diffs(z, y, x, &l);
 
 				if (z > 0 && t > 0 && t < 3) {
 					int ez;
@@ -59,7 +58,7 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 						ez,                               // e_z_t: prediction error
 						ph,                               // p_t: scaling exponent
 						0,                                // xi_z_i: default to 0
-						local_diffs[z][y][x].central,     // d_z_i_t1: central local difference
+						get_local_diffs(z, y, x).central, // d_z_i_t1: central local difference
 						-(1 << (Omega + 2)),              // omega_min: -2^(Omega+2)
 						(1 << (Omega + 2)) - 1            // omega_max: 2^(Omega+2) - 1
 					);
@@ -70,7 +69,7 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 				 */
 
 				int32_t pred_cent_local_diff =
-					compute_pred_cent_local_diff(z, y, x, local_diffs, weights);
+					compute_pred_cent_local_diff(z, y, x, weights);
 
 				int64_t high_res_pred_sample =
 					compute_high_res_pred_sample(pred_cent_local_diff, local_sum, Omega, R, Smid, Smax, Smin);
@@ -202,7 +201,7 @@ LocalDiff compute_local_diffs(int z, int y, int x, int32_t local_sum)
 	return ld;
 }
 
-int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiff local_diffs[100][100][100], int32_t const *weights)
+int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, int32_t const *weights)
 {
 	if (x == 0 && y == 0) {
 		return 0;
@@ -214,12 +213,12 @@ int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiff 
 
 	int32_t local_diff_vec[Cz(z)];
 
-	local_diff_vec[0] = local_diffs[z][y][x].north;
-	local_diff_vec[1] = local_diffs[z][y][x].west;
-	local_diff_vec[2] = local_diffs[z][y][x].northwest;
+	local_diff_vec[0] = get_local_diffs(z, y, x).north;
+	local_diff_vec[1] = get_local_diffs(z, y, x).west;
+	local_diff_vec[2] = get_local_diffs(z, y, x).northwest;
 
 	for (int i = 1, j = 3; i <= Pz(z); ++i, ++j) {
-		local_diff_vec[j] = local_diffs[z - i][y][x].central;
+		local_diff_vec[j] = get_local_diffs(z - i, y, x).central;
 	}
 
 	return inner_product(weights, local_diff_vec, Cz(z));
