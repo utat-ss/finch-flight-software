@@ -9,6 +9,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include "benchmark.h"
+
+int prediction[N_TILE_Z][N_TILE_Y][N_TILE_X];
+
 LOG_MODULE_REGISTER(bench);
 
 timing_t start_time;
@@ -23,7 +27,6 @@ uint64_t timing_measure_ms() {
 	timing_t end_time = timing_counter_get();
 	uint64_t total_cycles = timing_cycles_get(&start_time, &end_time);
 	uint64_t total_ns = timing_cycles_to_ns(total_cycles);
-	LOG_INF("total_cycles: %llu", total_cycles);
 	return total_ns / 1000000;
 }
 
@@ -35,8 +38,6 @@ int main(void)
 	const vec3 *N = img_get_N();
 
 	LOG_INF("Image initialized -- %llu ms", timing_measure_ms());
-
-	int prediction[N->z][N->y][N->x];
 
 	LOG_INF("Calling predict_image");
 

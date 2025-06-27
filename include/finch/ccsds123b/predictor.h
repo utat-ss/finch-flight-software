@@ -3,7 +3,7 @@
 
 #include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/util.h>
-#include <finch/ccsds123b/local_diffs.h>
+#include <finch/ccsds123b/arrays.h>
 
 #include <stdint.h>
 
