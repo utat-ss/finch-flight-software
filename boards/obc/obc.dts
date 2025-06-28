@@ -73,3 +73,25 @@
 		};
 	};
 };
+
+&i2c3 {
+    status = "okay";
+    scl-pin = <8>; /* Pin 8 as SCL */
+    sda-pin = <9>; /* Pin 9 as SDA */
+    clock-frequency = <I2C_BITRATE_STANDARD>;
+
+    rtc@rtc68 {
+        /* compatible = "myvendor,myrtc"; - got rid of this */
+        reg = <0x6F>;
+        /* label = "MY_RTC"; - got rid of this */
+    };
+};
+
+&pinctrl {
+   i2c3_default: i2c3_default {
+       group1 {
+           pinmux = <STM32_PINMUX('C’, 8, AF8)>, /* SCL = PB8 */
+                    <STM32_PINMUX('C’, 9, AF8)>; /* SDA = PB9 */
+       };
+   };
+};
