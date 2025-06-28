@@ -21,8 +21,9 @@ RUN /workspace/scripts/setup_python_venv.sh
 RUN /workspace/scripts/setup_west_workspace.sh
 
 # install debuggers
-RUN sudo apt install openocd
-RUN pip install pyocd
+RUN sudo apt install --no-install-recommends -y openocd
+RUN source /.venv/bin/activate && \
+    pip install pyocd
 
 ENTRYPOINT source /.venv/bin/activate && \
            source /zephyr/zephyr-env.sh && \
