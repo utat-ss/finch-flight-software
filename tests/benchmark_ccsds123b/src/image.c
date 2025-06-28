@@ -1,6 +1,6 @@
 #include <finch/ccsds123b/image.h>
+#include <finch/ccsds123b/constants.h>
 
-#include "benchmark.h"
 #include "finch/ccsds123b/util.h"
 /*
 	Test implementation of image.c, repeatedly sampling a smaller image instead of storing all of it in memory.

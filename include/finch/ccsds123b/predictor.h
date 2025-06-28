@@ -12,7 +12,7 @@
  */
 void predict_image(
 	const vec3 * N,
-	int32_t prediction[N->z][N->y][N->x]
+	Predictions predictions
 );
 
 /*

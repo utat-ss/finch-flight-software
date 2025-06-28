@@ -2,6 +2,7 @@
 #include <finch/ccsds123b/encoder.h>
 #include <finch/ccsds123b/image.h>
 #include <finch/ccsds123b/util.h>
+#include <finch/ccsds123b/constants.h>
 
 #include <stdio.h>
 #include <zephyr/kernel.h>
@@ -9,9 +10,8 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#include "benchmark.h"
 
-int prediction[N_TILE_Z][N_TILE_Y][N_TILE_X];
+int32_t prediction[N_TILE_Z][N_TILE_Y][N_TILE_X];
 
 LOG_MODULE_REGISTER(bench);
 

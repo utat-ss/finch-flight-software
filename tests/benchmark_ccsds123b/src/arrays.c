@@ -1,5 +1,5 @@
 #include <finch/ccsds123b/arrays.h>
-#include "benchmark.h"
+#include <finch/ccsds123b/constants.h>
 
 void update_local_diffs(LocalDiffs local_diffs, int z, int y, int x, const LocalDiff* l) {
     local_diffs[z % N_TILE_Z][y % N_TILE_Y][x % N_TILE_X] = *l;
