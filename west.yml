@@ -3,12 +3,12 @@ manifest:
   projects:
     - name: zephyr
       url: https://github.com/zephyrproject-rtos/zephyr.git
-      revision: v4.1.0
+      revision: v4.2.0-rc1
       path: zephyr
       import:
         name-allowlist:
           - hal_stm32
-          - cmsis
+          - cmsis_6
       west-commands: scripts/west-commands.yml
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git
