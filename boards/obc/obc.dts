@@ -79,6 +79,8 @@
     scl-pin = <8>; /* Pin 8 as SCL */
     sda-pin = <9>; /* Pin 9 as SDA */
     clock-frequency = <I2C_BITRATE_STANDARD>;
+	pinctrl-0 = <&i2c3_default>;
+	pinctrl-names = "default";
 
     rtc@rtc68 {
         /* compatible = "myvendor,myrtc"; - got rid of this */
