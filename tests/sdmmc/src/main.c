@@ -5,10 +5,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/storage/disk_access.h>
 
-LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
+int LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 #define AUTOMOUNT_NODE DT_NODELABEL(sdmmc1)
-FS_FSTAB_DECLARE_ENTRY(AUTOMOUNT_NODE);
+int FS_FSTAB_DECLARE_ENTRY(AUTOMOUNT_NODE);
 
 #define FILE_PATH "/SD:/hello.txt"
 
