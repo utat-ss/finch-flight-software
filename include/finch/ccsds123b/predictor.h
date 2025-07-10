@@ -3,22 +3,16 @@
 
 #include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/util.h>
+#include <finch/ccsds123b/arrays.h>
 
 #include <stdint.h>
-
-typedef struct {
-	int32_t central;
-	int32_t north;
-	int32_t west;
-	int32_t northwest;
-} LocalDiff;
 
 /*
  * Returns the prediction of dimension N
  */
 void predict_image(
 	const vec3 * N,
-	int32_t prediction[N->z][N->y][N->x]
+	Predictions p
 );
 
 /*
@@ -54,7 +48,7 @@ int32_t compute_pred_cent_local_diff(
 	int32_t z,
 	int32_t y,
 	int32_t x,
-	LocalDiff local_diffs[100][100][100],
+	LocalDiffs local_diffs,
 	const int32_t *weights
 );
 
