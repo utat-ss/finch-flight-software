@@ -25,7 +25,6 @@
 
 4. **Monitor logs**
     ```sh
-    sudo apt-get install minicom
     sudo minicom -s # Go to 'Serial port setup' and set 'A - Serial Device' to /dev/ttyACM0
     minicom
     ```
