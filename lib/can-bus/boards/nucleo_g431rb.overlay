@@ -1,0 +1,29 @@
+/ {
+    chosen {
+        fdcan1 = &fdcan1;
+    };
+};
+
+/* enable CAN controller */
+&fdcan1 {
+    status = "okay";
+    pinctrl-0 = <&fdcan1_tx_pa12 &fdcan1_rx_pa11>;
+    pinctrl-names = "default";
+    bus-speed = <500000>; // bitrate
+    bus-speed-data = <1000000>;
+    sample-point = <750>;
+};
+
+&pinctrl {
+    fdcan1_tx_pa12: fdcan1_tx_pa12 {
+        pinmux = <STM32_PINMUX('A', 12, AF9)>; // TX = PA12
+        bias-disable;
+        drive-push-pull;
+        slew-rate = "low-speed";
+    };
+
+    fdcan1_rx_pa11: fdcan1_rx_pa11 {
+        pinmux = <STM32_PINMUX('A', 11, AF9)>; // RX = PA11
+        bias-disable;
+    };
+};
