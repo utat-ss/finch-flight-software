@@ -1,0 +1,116 @@
+name: Zephyr Library Build Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build-libs:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: obc
+            board: obc
+          - name: pay
+            board: pay
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+
+      - name: Setup Python venv
+        run: |
+          chmod +x ./scripts/setup_python_venv.sh
+          ./scripts/setup_python_venv.sh
+
+      - name: Setup west workspace
+        run: |
+          chmod +x ./scripts/setup_west_workspace.sh
+          ./scripts/setup_west_workspace.sh
+
+      - name: Build all libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          source ../.venv/bin/activate
+          source ../zephyr/zephyr-env.sh
+          source finch-flight-software-env.sh
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running on PR — checking all commits..."
+            commits=$(gh pr view ${{ github.event.number }} --repo ${{ github.repository }} --json commits --jq '.commits[].oid')
+          else
+            echo "Running on push to main — checking HEAD only..."
+            commits=$(git rev-parse HEAD)
+          fi
+
+          echo "Commit list: $commits"
+
+          failed_commits=""
+          failed_libs=""
+
+          for commit in $commits; do
+            echo "::group::Building libraries for commit $commit"
+            git checkout $commit
+
+            # Check if lib directory exists
+            if [ ! -d "lib" ]; then
+              echo "Error: lib directory not found"
+              exit 0
+            fi
+
+            # Iterate through each directory in lib
+            for dir in lib/*/ ; do
+              if [ -d "$dir" ]; then
+                echo "Building library in $dir for board ${{ matrix.board }}"
+                rm -rf build-$dir
+                mkdir -p build-$dir
+                set +e
+                west -v build -b ${{ matrix.board }} -d build-$dir $dir -p -- -DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT
+                build_status=$?
+                set -e
+
+                if [ $build_status -ne 0 ]; then
+                  echo "Failed to build $dir for board ${{ matrix.board }}."
+                  failed_libs+="$dir "
+                fi
+                rm -rf build-$dir
+              fi
+            done
+
+            echo "::endgroup::"
+
+            if [ -n "$failed_libs" ]; then
+              echo "Failed to build libraries: $failed_libs for commit $commit."
+              failed_commits+="$commit "
+            fi
+          done
+
+          echo "Board: ${{ matrix.board }}, Libraries: All in lib/."
+          if [ -z "$failed_commits" ]; then
+            echo "All libraries built successfully for all commits."
+            exit 0
+          else
+            echo "One or more commits failed: $failed_commits."
+            exit 1
+          fi
