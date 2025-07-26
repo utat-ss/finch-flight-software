@@ -80,7 +80,7 @@
 	pinctrl-names = "default";
 	status = "okay";
 
-	mcp790n: rtc@6f {
+	mcp7940n: rtc@6f {
 		compatible = "microchip,mcp7940n";
 		reg = <0x6f>;
 		status = "okay";
@@ -89,10 +89,10 @@
 
 &pinctrl {
 	i2c3_scl_pc8: i2c3_scl_pc8 {
-		pinmux = <STM32_PINMUX('C', 8, AF4)>;
+		pinmux = <STM32_PINMUX('C', 8, AF8)>;
 	};
 
 	i2c3_sda_pc9: i2c3_sda_pc9 {
-		pinmux = <STM32_PINMUX('C', 9, AF4)>;
+		pinmux = <STM32_PINMUX('C', 9, AF8)>;
 	};
 };
