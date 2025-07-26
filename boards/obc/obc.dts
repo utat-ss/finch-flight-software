@@ -96,3 +96,19 @@
 		pinmux = <STM32_PINMUX('C', 9, AF8)>;
 	};
 };
+
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pb7 &usart1_rx_pb6>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&pinctrl {
+	usart1_rx_pb6: usart1_rx_pb6 {
+		pinmux = <STM32_PINMUX('B', 6, AF7)>;
+	};
+
+	usart1_tx_pb7: usart1_tx_pb7 {
+		pinmux = <STM32_PINMUX('B', 7, AF7)>;
+	};
+};
