@@ -28,8 +28,8 @@ jobs:
             board: nucleo_g431rb
             path: ./apps/obc
             overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
-          - name: pay-native
-            board: native_sim
+          - name: pay-finch
+            board: pay
             path: ./apps/pay
           - name: pay-nucleo
             board: nucleo_h743zi
