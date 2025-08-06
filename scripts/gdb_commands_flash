@@ -1,0 +1,10 @@
+# Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+set pagination off
+target extended-remote host.docker.internal:3333
+monitor reset halt
+load
+monitor reset
+detach
+quit
