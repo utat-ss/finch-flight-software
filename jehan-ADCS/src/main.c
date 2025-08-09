@@ -7,7 +7,10 @@
 #include <zephyr/drivers/pinctrl.h>
 
 //const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(uart0));
-const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(usart1));;
+
+const struct pinctrl_state* pinctrl_dev_config;
+
+const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(usart2));;
 
 void adcs_send_cmd(const uint8_t *cmd, size_t len){
     for(size_t i = 0; i < len; i++){//added len -1 -- for(size_t i = 1; i < len; i++)
@@ -40,7 +43,10 @@ int main (void){
     
     k_msleep(50); //wait out any zephyr uart setup glitches
 
-    pinctrl_apply_state(adcs_uart, PINCTRL_STATE_DEFAULT);//switch pin PC4 from GPIO pin (idling high) to a UART TX pin
+    //const struct pinctrl_dev_config *pcfg = PINCTRL_DT_DEV_CONFIG_GET(DT_NODELABEL(usart1));
+    //pinctrl_apply_state(pcfg, PINCTRL_STATE_DEFAULT);
+
+    
 
     if (device_is_ready(adcs_uart)){
         printk("device success");
