@@ -1,62 +1,18 @@
 # Getting Started
 
-This guide covers setup on **Ubuntu 24.04 LTS** with **x86_64** processor.
+## Setup
 
-### System Update
+The installation and usage instructions are in `LINUX_MACOS_SETUP.md` for Linux/macOS, and in `WINDOWS_SETUP.md` for Windows.
 
-```sh
-sudo apt update
-sudo apt upgrade
+If you use Ubuntu 24.04 or WSL and want to install everything manually, use `MANUAL_SETUP.md`.
+
+## Docker container structure
+
+The Docker container has a minimal Ubuntu 24.04 installation under the hood. It's files are structured in the following way:
 ```
-
-### Make an Empty Directory
-
-```sh
-mkdir ~/finch
-cd ~/finch
-```
-
-**Note:** This is because the west manifest will populate one directory above this repository.
-
-### Clone This Repository
-
-Using **HTTPS**:
-
-```sh
-git clone https://github.com/utat-ss/finch-flight-software.git
-cd finch-flight-software
-```
-
-Using **SSH**:
-
-```sh
-git clone git@github.com:utat-ss/finch-flight-software.git
-cd finch-flight-software
-```
-
-### Install Dependencies
-
-```sh
-./scripts/install_dependencies.sh
-```
-
-### Set Up Python Virtual Environment
-
-```sh
-./scripts/setup_python_venv.sh
-```
-
-### Set Up West Workspace
-
-```sh
-./scripts/setup_west_workspace.sh
-```
-
-### Set Zephyr Environment Variables
-```sh
-source ../zephyr/zephyr-env.sh
-```
-### Activate Python Virtual Environment
-```sh
-source ../.venv/bin/activate
+    /build      -- Folder with build artifacts
+    /west.yml   -- Config file used by west commands
+    /workspace  -- Mounted finch-flight-software project folder
+    /zephyr     -- Zephyr Installation
+    /zephyr-sdk -- Zephyr SDK Installation
 ```
