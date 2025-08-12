@@ -12,4 +12,3 @@ west init --local --mf west.yml && west update
 west zephyr-export
 pip install -r "$(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/zephyr/scripts/requirements.txt"
 west sdk install --install-base $(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")
-echo "FINCH Flight Software Development Environment setup completed."
