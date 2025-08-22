@@ -1,0 +1,33 @@
+name: Copyright Check
+
+on:
+  push:
+    branches:
+      - main
+      - v*-branch
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+      - v*-branch
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  copyright_check_job:
+    runs-on: ubuntu-24.04
+    name: Copyright Check
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+      - name: Run the script
+        run: |
+          ./scripts/copyright-check.py
