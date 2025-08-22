@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <finch/ccsds123b/predictor.h>
 #include <finch/ccsds123b/image.h>
 #include <finch/ccsds123b/util.h>
