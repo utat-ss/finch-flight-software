@@ -8,7 +8,7 @@
     - **Windows (Powershell)**:
         ```powershell
         usbipd list # Look for STMicroelectronic
-        usbipd share --wsl --busid <busid> # Replace with your Nucleo's busid
+        usbipd bind --busid <busid> # Run as administrator; replace <busid> with your Nucleo's busid
         usbipd attach --wsl --busid <busid>
         ```
     - **Ubuntu**:
