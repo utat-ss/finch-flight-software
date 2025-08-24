@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           chmod +x ./scripts/install_dependencies.sh
-          ./scripts/install_dependencies.sh
+          sudo ./scripts/install_dependencies.sh
 
       - name: Setup Python venv
         run: |
