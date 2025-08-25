@@ -1,0 +1,7 @@
+# Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+config FINCH_CCSDS123B
+	bool "Support for CCSDS123B"
+	help
+	  This option enables the CCSDS123B compression library
