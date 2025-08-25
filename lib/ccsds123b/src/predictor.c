@@ -4,19 +4,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <finch/ccsds123b/predictor.h>
-#include <finch/ccsds123b/image.h>
-#include <finch/ccsds123b/util.h>
+#include <finch/ccsds123b/arrays.h>
 #include <finch/ccsds123b/constants.h>
+#include <finch/ccsds123b/image.h>
+#include <finch/ccsds123b/predictor.h>
+#include <finch/ccsds123b/util.h>
 
+#include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <math.h>
-#include <inttypes.h>
-#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
 
-LocalDiff local_diffs[3][4][4];
+LOG_MODULE_REGISTER(ccsds123b_predictor);
+
+LocalDiffs local_diffs;
 
 static int32_t sgn_pos(int x)
 {
@@ -30,13 +32,13 @@ static int32_t sgn_pos(int x)
 int32_t prev_quantizer;
 int32_t dbl_res;
 
-void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
+void predict_image(const vec3 *N, Predictions p)
 {
 	/*
 	 * Compute Prediction and Quantization
 	 */
 
-	printk("-----------------------------------\nQuantizer index\n");
+	LOG_DBG("-----------------------------------\nQuantizer index\n");
 
 	for (int z = 0; z < N->z; ++z) {
 		int32_t weights[Pz(z) + 3];
@@ -47,7 +49,9 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 			for (int x = 0; x < N->x; ++x, ++t) {
 				int32_t local_sum = compute_local_sum(z, y, x);
 
-				local_diffs[z][y][x] = compute_local_diffs(z, y, x, local_sum);
+				LocalDiff l = compute_local_diffs(z, y, x, local_sum);
+
+				update_local_diffs(local_diffs, z, y, x, &l);
 
 				if (z > 0 && t > 0 && t < 3) {
 					int ez;
@@ -65,7 +69,7 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 						ez,                               // e_z_t: prediction error
 						ph,                               // p_t: scaling exponent
 						0,                                // xi_z_i: default to 0
-						local_diffs[z][y][x].central,     // d_z_i_t1: central local difference
+						get_local_diffs(local_diffs, z, y, x).central, // d_z_i_t1: central local difference
 						-(1 << (Omega + 2)),              // omega_min: -2^(Omega+2)
 						(1 << (Omega + 2)) - 1            // omega_max: 2^(Omega+2) - 1
 					);
@@ -108,14 +112,13 @@ void predict_image(const vec3 *N, int32_t prediction[N->z][N->y][N->x])
 				/*
 				 * Prediction
 				 */
+				update_predictions(p, z, y, x, mapped_quantizer_index);
 
-				prediction[z][y][x] = mapped_quantizer_index;
-
-				printk("%lld ", quantizer_index);
+				LOG_DBG("%lld ", quantizer_index);
 			}
-			printk("\n");
+			LOG_DBG("\n");
 		}
-		printk("\n");
+		LOG_DBG("\n");
 	}
 }
 
@@ -208,7 +211,7 @@ LocalDiff compute_local_diffs(int z, int y, int x, int32_t local_sum)
 	return ld;
 }
 
-int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiff local_diffs[3][4][4], int32_t const *weights)
+int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs local_diffs, int32_t const *weights)
 {
 	if (x == 0 && y == 0) {
 		return 0;
@@ -220,12 +223,12 @@ int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiff 
 
 	int32_t local_diff_vec[Cz(z)];
 
-	local_diff_vec[0] = local_diffs[z][y][x].north;
-	local_diff_vec[1] = local_diffs[z][y][x].west;
-	local_diff_vec[2] = local_diffs[z][y][x].northwest;
+	local_diff_vec[0] = get_local_diffs(local_diffs, z, y, x).north;
+	local_diff_vec[1] = get_local_diffs(local_diffs, z, y, x).west;
+	local_diff_vec[2] = get_local_diffs(local_diffs, z, y, x).northwest;
 
 	for (int i = 1, j = 3; i <= Pz(z); ++i, ++j) {
-		local_diff_vec[j] = local_diffs[z - i][y][x].central;
+		local_diff_vec[j] = get_local_diffs(local_diffs, z - i, y, x).central;
 	}
 
 	return inner_product(weights, local_diff_vec, Cz(z));
