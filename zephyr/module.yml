@@ -3,4 +3,5 @@
 
 name: finch-flight-software
 build:
+  kconfig: Kconfig
   cmake: .
