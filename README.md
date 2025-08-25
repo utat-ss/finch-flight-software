@@ -37,7 +37,7 @@ cd finch-flight-software
 ### Install Dependencies
 
 ```sh
-./scripts/install_dependencies.sh
+sudo ./scripts/install_dependencies.sh
 ```
 
 ### Set Up Python Virtual Environment
