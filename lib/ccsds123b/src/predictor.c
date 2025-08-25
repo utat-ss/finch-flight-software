@@ -14,7 +14,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+
+LOG_MODULE_REGISTER(ccsds123b_predictor);
 
 LocalDiffs local_diffs;
 
@@ -36,7 +38,7 @@ void predict_image(const vec3 *N, Predictions p)
 	 * Compute Prediction and Quantization
 	 */
 
-	printk("-----------------------------------\nQuantizer index\n");
+	LOG_DBG("-----------------------------------\nQuantizer index\n");
 
 	for (int z = 0; z < N->z; ++z) {
 		int32_t weights[Pz(z) + 3];
@@ -112,11 +114,11 @@ void predict_image(const vec3 *N, Predictions p)
 				 */
 				update_predictions(p, z, y, x, mapped_quantizer_index);
 
-				printk("%lld ", quantizer_index);
+				LOG_DBG("%lld ", quantizer_index);
 			}
-			printk("\n");
+			LOG_DBG("\n");
 		}
-		printk("\n");
+		LOG_DBG("\n");
 	}
 }
 
