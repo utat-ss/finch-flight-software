@@ -7,6 +7,7 @@
 #ifndef FINCH_INCLUDE_ENCODER_H
 #define FINCH_INCLUDE_ENCODER_H
 
+#include <finch/ccsds123b/arrays.h>
 #include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/util.h>
 
@@ -15,8 +16,8 @@
  */
 void encode_prediction(
 	const vec3 * N,
-	int32_t prediction[N->z][N->y][N->x],
-	char encoding[N->z][N->y][N->x][32]
+	Predictions prediction,
+	EncoderOut encoding
 );
 
 /*
@@ -24,7 +25,7 @@ void encode_prediction(
  */
 void encode_gpo2(
 	int j, int k,
-	char out[32]
+	EncoderOutItem out
 );
 
 #endif /* FINCH_INCLUDE_ENCODER_H */
