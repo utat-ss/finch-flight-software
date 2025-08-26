@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <finch/ccsds123b/arrays.h>
 #include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/encoder.h>
-#include <finch/ccsds123b/predictor.h>
+#include <finch/ccsds123b/util.h>
 
 #include <math.h>
 #include <stdint.h>
@@ -26,7 +27,7 @@ static void compute_k(int accumulator, int counter, int *k)
 	}
 }
 
-void encode_prediction(const vec3 *N, int32_t prediction[N->z][N->y][N->x], char out[N->z][N->y][N->x][32])
+void encode_prediction(const vec3 *N, Predictions prediction, EncoderOut out)
 {
 	for (int z = 0; z < N->z; ++z) {
 		int kz = 0;
@@ -37,9 +38,11 @@ void encode_prediction(const vec3 *N, int32_t prediction[N->z][N->y][N->x], char
 			for (int x = 0; x < N->x; ++x) {
 				if (y != 0 && x != 0) {
 					if (counter < pow(2, 4) - 1) {
-						accumulator += prediction[z][y][x];
+						accumulator += get_predictions(prediction, z, y, x);
 					} else if (counter == pow(2, 4) - 1) {
-						accumulator = (accumulator + prediction[z][y - 1][N->x - 1] + 1) / 2.0f;
+						int32_t p = get_predictions(prediction, z, y - 1, N->x - 1);
+
+						accumulator = (accumulator + p + 1) / 2.0f;
 					}
 
 					if (counter < pow(2, 4) - 1) {
@@ -50,17 +53,17 @@ void encode_prediction(const vec3 *N, int32_t prediction[N->z][N->y][N->x], char
 				}
 
 				// [5.4.3.2.2] Sample adaptive entropy encoder
-				int32_t j = prediction[z][y][x];
+				int32_t j = get_predictions(prediction, z, y, x);
 				int32_t k;
 
 				compute_k(accumulator, counter, &k);
-				encode_gpo2(j, k, out[z][y][x]);
+				encode_gpo2(j, k, get_encoder_out(out, z, y, x));
 			}
 		}
 	}
 }
 
-void encode_gpo2(int j, int k, char out[32])
+void encode_gpo2(int j, int k, EncoderOutItem out)
 {
 	if (j >= (1U << D) || k > D) {
 		snprintf(out, 32, "%s", "<neg>");
