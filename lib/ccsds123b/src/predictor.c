@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <finch/ccsds123b/predictor.h>
-#include <finch/ccsds123b/image.h>
-#include <finch/ccsds123b/util.h>
 #include <finch/ccsds123b/constants.h>
+#include <finch/ccsds123b/image.h>
+#include <finch/ccsds123b/predictor.h>
+#include <finch/ccsds123b/util.h>
 
+#include <inttypes.h>
+#include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <math.h>
-#include <inttypes.h>
 #include <zephyr/kernel.h>
 
 LocalDiff local_diffs[3][4][4];

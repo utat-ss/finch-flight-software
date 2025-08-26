@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <finch/ccsds123b/constants.h>
 #include <finch/ccsds123b/encoder.h>
 #include <finch/ccsds123b/predictor.h>
-#include <finch/ccsds123b/constants.h>
 
-#include <stdio.h>
-#include <stdint.h>
 #include <math.h>
+#include <stdint.h>
+#include <stdio.h>
 
 static void compute_k(int accumulator, int counter, int *k)
 {

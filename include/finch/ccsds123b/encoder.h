@@ -7,8 +7,8 @@
 #ifndef FINCH_INCLUDE_ENCODER_H
 #define FINCH_INCLUDE_ENCODER_H
 
-#include <finch/ccsds123b/util.h>
 #include <finch/ccsds123b/constants.h>
+#include <finch/ccsds123b/util.h>
 
 /*
  * [5.4.2.3] Band Sequential Order.
