@@ -5,10 +5,11 @@
  */
 
 #include "reconstructor.h"
+
 #include <finch/ccsds123b/constants.h>
 
-#include <string.h>
 #include <math.h>
+#include <string.h>
 
 void decode_encoding(
 	const vec3 * N,

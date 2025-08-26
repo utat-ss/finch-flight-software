@@ -5,9 +5,10 @@
  */
 
 #include "reconstructor.h"
-#include <finch/ccsds123b/predictor.h>
+
 #include <finch/ccsds123b/encoder.h>
 #include <finch/ccsds123b/image.h>
+#include <finch/ccsds123b/predictor.h>
 #include <finch/ccsds123b/util.h>
 
 #include <stdio.h>

@@ -7,8 +7,8 @@
 #ifndef FINCH_INCLUDE_RECONSTRUCTOR_H
 #define FINCH_INCLUDE_RECONSTRUCTOR_H
 
-#include <finch/ccsds123b/predictor.h>
 #include <finch/ccsds123b/constants.h>
+#include <finch/ccsds123b/predictor.h>
 #include <finch/ccsds123b/util.h>
 
 /*
