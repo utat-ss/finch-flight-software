@@ -355,7 +355,9 @@ int64_t compute_mapped_quantizer_index(int64_t quantizer_index, int64_t double_r
 	if (abs(quantizer_index) > theta) {
 		return abs(quantizer_index) + theta;
 	} else {
-		int64_t c = pow(-1, double_res_pred_sample_value) * quantizer_index;
+		/* powed = (-1) ^ (double_res_pred_sample_value)*/
+		int64_t powed = (double_res_pred_sample_value % 2 == 0) ? 1 : -1;
+		int64_t c = powed * quantizer_index;
 
 		if (c >= 0 && c <= theta) {
 			return 2 * abs(quantizer_index);
