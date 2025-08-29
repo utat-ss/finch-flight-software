@@ -1,0 +1,2 @@
+set pagination off
+target extended-remote host.docker.internal:3333

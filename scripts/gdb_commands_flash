@@ -1,0 +1,7 @@
+set pagination off
+target extended-remote host.docker.internal:3333
+monitor reset halt
+load
+monitor reset
+detach
+quit
