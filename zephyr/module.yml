@@ -5,3 +5,5 @@ name: finch-flight-software
 build:
   kconfig: Kconfig
   cmake: .
+  settings:
+    board_root: .
