@@ -5,9 +5,9 @@
 
 set -e
 
-apt update
+apt-get update
 
-apt install --no-install-recommends -y \
+apt-get install --no-install-recommends -y \
     git \
     cmake \
     ninja-build \
