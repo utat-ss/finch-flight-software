@@ -50,4 +50,4 @@ jobs:
           source ../zephyr/zephyr-env.sh
           source finch-flight-software-env.sh
 
-          ../zephyr/scripts/twister -T tests --build-only -vvv -x "-- -DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT"
+          ../zephyr/scripts/twister -T tests --build-only -vvv
