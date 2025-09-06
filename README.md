@@ -1,62 +1,35 @@
 # Getting Started
 
-This guide covers setup on **Ubuntu 24.04 LTS** with **x86_64** processor.
+## Setup
 
-### System Update
+The installation and usage instructions are in `SETUP.md`.
 
-```sh
-sudo apt update
-sudo apt upgrade
+If you use Ubuntu 24.04 or WSL and want to install everything manually, use `MANUAL_SETUP.md`.
+
+## Docker container structure
+
+The Docker container has a minimal Ubuntu 24.04 installation under the hood. It's files are structured in the following way:
+```
+    /build      -- Folder with build artifacts
+    /west.yml   -- Config file used by west commands
+    /workspace  -- Mounted finch-flight-software project folder
+    /zephyr     -- Zephyr Installation
+    /zephyr-sdk -- Zephyr SDK Installation
 ```
 
-### Make an Empty Directory
+### Troubleshooting the container
 
-```sh
-mkdir ~/finch
-cd ~/finch
-```
+If the container doesn't open or it has some other issue, you can try removing it and opening it again.
 
-**Note:** This is because the west manifest will populate one directory above this repository.
+Run the following commands from the host terminal:
 
-### Clone This Repository
+1. `docker container rm utat-ss-finch-container`
+2. `./scripts/open_container.sh` or `.\scripts\open_container.ps1`
 
-Using **HTTPS**:
+### Updating the container
 
-```sh
-git clone https://github.com/utat-ss/finch-flight-software.git
-cd finch-flight-software
-```
+Run the following commands from the host terminal:
 
-Using **SSH**:
-
-```sh
-git clone git@github.com:utat-ss/finch-flight-software.git
-cd finch-flight-software
-```
-
-### Install Dependencies
-
-```sh
-sudo ./scripts/install_dependencies.sh
-```
-
-### Set Up Python Virtual Environment
-
-```sh
-./scripts/setup_python_venv.sh
-```
-
-### Set Up West Workspace
-
-```sh
-./scripts/setup_west_workspace.sh
-```
-
-### Set Zephyr Environment Variables
-```sh
-source ../zephyr/zephyr-env.sh
-```
-### Activate Python Virtual Environment
-```sh
-source ../.venv/bin/activate
-```
+1. `docker container rm utat-ss-finch-container`
+2. `docker pull ghcr.io/utat-ss/finch-flight-software:latest`
+3. `./scripts/open_container.sh` or `.\scripts\open_container.ps1`

@@ -26,7 +26,5 @@ apt-get install --no-install-recommends -y \
     file \
     make \
     gcc \
-    gcc-multilib \
-    g++-multilib \
     libsdl2-dev \
     libmagic1
