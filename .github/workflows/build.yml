@@ -79,7 +79,7 @@ jobs:
 
           echo "Commit list: $commits"
 
-          EXTRA_ARGS="-DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT"
+          EXTRA_ARGS=""
           if [ -f "${{ matrix.overlay }}" ]; then
             EXTRA_ARGS+="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
           fi
