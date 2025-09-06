@@ -81,7 +81,7 @@ jobs:
 
           EXTRA_ARGS="-DBOARD_ROOT=$FINCH_FLIGHT_SOFTWARE_ROOT"
           if [ -f "${{ matrix.overlay }}" ]; then
-            EXTRA_ARGS="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
+            EXTRA_ARGS+="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
           fi
 
           failed_commits=""
