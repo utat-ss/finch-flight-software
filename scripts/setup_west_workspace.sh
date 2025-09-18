@@ -11,4 +11,4 @@ cd "${FINCH_FLIGHT_SOFTWARE_ROOT}"
 west init --local --mf west.yml && west update
 west zephyr-export
 west packages pip --install
-west sdk install --install-base $(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}") --toolchains arm-zephyr-eabi
+west sdk install --install-dir $(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/zephyr-sdk --toolchains arm-zephyr-eabi
