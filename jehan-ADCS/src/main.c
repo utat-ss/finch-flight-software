@@ -8,9 +8,9 @@
 
 //const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(uart0));
 
-const struct pinctrl_state* pinctrl_dev_config;
+//const struct pinctrl_state* pinctrl_dev_config;
 
-const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(usart2));;
+const struct device *adcs_uart = DEVICE_DT_GET(DT_NODELABEL(usart1));
 
 void adcs_send_cmd(const uint8_t *cmd, size_t len){
     for(size_t i = 0; i < len; i++){//added len -1 -- for(size_t i = 1; i < len; i++)

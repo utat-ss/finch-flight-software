@@ -1,19 +1,8 @@
 #include <dt-bindings/pinctrl/stm32-pinctrl.h>
 
-&usart2 {
-	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa2>;
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pc4 &usart1_rx_pc5>;
 	pinctrl-names = "default";
 	status = "okay";
 };
 
-&pinctrl {
-	usart2_rx_pa2: usart2_rx_pa2 {
-		pinmux = <STM32_PINMUX('A', 2, AF7)>;
-		bias-pull-up;
-	};
-
-	usart2_tx_pa3: usart2_tx_pa3 {
-		pinmux = <STM32_PINMUX('A', 3, AF7)>;
-		bias-pull-up;
-	};
-};
