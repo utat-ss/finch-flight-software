@@ -4,6 +4,7 @@
 
 The FINCH-FLIGHT-SOFTWARE officially supports development on the following operating systems:
 - Ubuntu 24.04 (x86_64)
+- Fedora 42 (x86_64)
 - macOS 15 (AArch64)
 - Windows 11 (x86_64)
 
