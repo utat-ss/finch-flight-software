@@ -24,7 +24,7 @@ while ($true) {
         pyocd gdbserver --connect attach --allow-remote --pack ${G4Pack} --pack ${H7Pack}
     }
     elseif ($args.Count -eq 1) {
-        pyocd gdbserver $args[0] --connect attach --allow-remote --pack ${G4Pack} --pack ${H7Pack}
+        pyocd gdbserver --target $args[0] --connect attach --allow-remote --pack ${G4Pack} --pack ${H7Pack}
     }
 
     if ($LastExitCode -ne 0) {
