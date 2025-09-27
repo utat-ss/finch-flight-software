@@ -41,9 +41,10 @@ void predict_image(const vec3 *N, Predictions p)
 	LOG_DBG("-----------------------------------\nQuantizer index\n");
 
 	for (int z = 0; z < N->z; ++z) {
-		int32_t weights[Pz(z) + 3];
+		int32_t weights_size = Pz(z) + 3;
+		int32_t weights[weights_size];
 
-		initialize_weights(weights, z, Omega);
+		initialize_weights(weights, weights_size, z, Omega);
 
 		for (int y = 0, t = 0; y < N->y; ++y) {
 			for (int x = 0; x < N->x; ++x, ++t) {
@@ -234,7 +235,7 @@ int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs
 	return inner_product(weights, local_diff_vec, Cz(z));
 }
 
-void initialize_weights(int32_t *weights, int z, int32_t omega)
+void initialize_weights(int32_t *weights, int32_t weights_size, int z, int32_t omega)
 {
 	for (int i = 0; i < 3; i++) {
 		weights[i] = 0;
@@ -244,7 +245,7 @@ void initialize_weights(int32_t *weights, int z, int32_t omega)
 
 	weights[3] = (7 * two_omega) >> 3; /* 7/8 * 2^omega */
 
-	for (int i = 4; i < 3 + Pz(z); ++i) {
+	for (int i = 4; i < weights_size; ++i) {
 		weights[i] = weights[i - 1] >> 3; /* floor(1/8 * weights[i-1]) */
 	}
 }
