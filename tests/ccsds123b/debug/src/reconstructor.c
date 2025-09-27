@@ -125,6 +125,7 @@ void reconstruct_prediction(
 	LocalDiff local_diff[N->z][N->y][N->z];
 
 	int weights[P + 3];
+	int weights_size = P + 3;
 
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
@@ -135,7 +136,7 @@ void reconstruct_prediction(
 	}
 
 	for (int z = 0; z < N->z; ++z) {
-		initialize_weights(weights, z, Omega);
+		initialize_weights(weights, weights_size, z, Omega);
 
 		int t = 0;
 

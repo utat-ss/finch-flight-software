@@ -63,6 +63,7 @@ int32_t compute_pred_cent_local_diff(
  */
 void initialize_weights(
 	int32_t *weights,
+	int32_t weights_size,
 	int z,
 	int32_t omega
 );
