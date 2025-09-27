@@ -31,6 +31,7 @@ static int32_t sgn_pos(int x)
 
 int32_t prev_quantizer;
 int32_t dbl_res;
+int32_t initialized_weights;
 
 void predict_image(const vec3 *N, Predictions p)
 {
@@ -41,7 +42,8 @@ void predict_image(const vec3 *N, Predictions p)
 	LOG_DBG("-----------------------------------\nQuantizer index\n");
 
 	for (int z = 0; z < N->z; ++z) {
-		int32_t weights[Pz(z) + 3];
+		initialized_weights = Pz(z) + 3;
+		int32_t weights[initialized_weights];
 
 		initialize_weights(weights, z, Omega);
 
@@ -227,7 +229,7 @@ int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs
 	local_diff_vec[1] = get_local_diffs(local_diffs, z, y, x).west;
 	local_diff_vec[2] = get_local_diffs(local_diffs, z, y, x).northwest;
 
-	for (int i = 1, j = 3; i <= Pz(z); ++i, ++j) {
+	for (int i = 1, j = 3; i <= initialized_weights - 3; ++i, ++j) {
 		local_diff_vec[j] = get_local_diffs(local_diffs, z - i, y, x).central;
 	}
 
@@ -244,7 +246,7 @@ void initialize_weights(int32_t *weights, int z, int32_t omega)
 
 	weights[3] = (7 * two_omega) >> 3; /* 7/8 * 2^omega */
 
-	for (int i = 4; i < 3 + Pz(z); ++i) {
+	for (int i = 4; i < initialized_weights; ++i) {
 		weights[i] = weights[i - 1] >> 3; /* floor(1/8 * weights[i-1]) */
 	}
 }
