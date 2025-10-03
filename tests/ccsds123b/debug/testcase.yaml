@@ -1,4 +1,4 @@
 tests:
-  ccsds123b.test:
+  ccsds123b.debug:
     platform_allow:
       - nucleo_h743zi
