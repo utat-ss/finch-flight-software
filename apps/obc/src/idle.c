@@ -11,6 +11,9 @@
 
 #include "idle.h"
 #include <stdbool.h>
+#include <zephyr/logging/log.h>
+
+LOG_MODULE_REGISTER(idle, LOG_LEVEL_INF);
 
 /** 
  * @brief OBC transmits spacecraft orient command
@@ -55,18 +58,15 @@ int obc_scheduled_mode_change(const char* command_mode, const char* mode_params,
 /**
  * @brief OBC logs error
 */
-int obc_log_error(const char* errortype) {
-    // Sim logging
-    return 0;
+void obc_log_error(const char* errortype) {
+    LOG_INF("OBC error: %s", errortype);
 }
-
 
 /**
  * @brief if contact is not established between RF and OBC
 */
-int rf_msg_error(const char* errortype) {
-    // sim transmission 
-    return 0;
+void rf_msg_error(const char* errortype) {
+    LOG_INF("RF message error: %s", errortype);
 }
 
 /** 
