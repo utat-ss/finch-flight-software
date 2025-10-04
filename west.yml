@@ -3,7 +3,7 @@ manifest:
   projects:
     - name: zephyr
       url: https://github.com/zephyrproject-rtos/zephyr.git
-      revision: v4.2.0
+      revision: 413b789deb391d3a37d06b463288a5fe765ee57e # v4.2.0
       path: zephyr
       import:
         name-allowlist:
@@ -12,5 +12,5 @@ manifest:
       west-commands: scripts/west-commands.yml
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git
-      revision: v2.0
+      revision: f8c366e5dfd9879990747d815ff5b2c2dda4dfe3
       path: modules/lib/libcsp
