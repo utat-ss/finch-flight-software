@@ -114,6 +114,13 @@ int idle_command_sequence(void)
 	const char *schedule = "scheduled";
 	const char *errortype = "comms";
 
+	// unused for now
+	(void)attitude;
+	(void)command_mode;
+	(void)mode_params;
+	(void)schedule;
+	(void)errortype;
+
 	obc_command_orient("sunpointing");
 	if (adcs_execute_orient("sunpointing") == true) {
 		if (obc_system_health_check() == false) {
@@ -143,3 +150,6 @@ int idle_command_sequence(void)
 	}
 	return 0;
 }
+
+// to avoid unused function warning cppcheck
+(void)idle_command_sequence;

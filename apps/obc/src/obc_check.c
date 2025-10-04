@@ -67,3 +67,6 @@ bool obc_check(void)
 
 	return ping_ok && flash_ok && RTC_ok;
 }
+
+// to avoid unused function warning cppcheck
+(void)obc_check;
