@@ -1,4 +1,5 @@
 tests:
-  ccsds123b.debug:
+  ccsds123b.benchmark:
     platform_allow:
       - nucleo_h743zi
+      - pay
