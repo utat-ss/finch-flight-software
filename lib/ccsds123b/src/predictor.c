@@ -31,7 +31,7 @@ static int32_t sgn_pos(int x)
 
 static inline int get_weights_size(int z)
 {
-    return 3 + Pz(z);
+	return 3 + Pz(z);
 }
 
 int32_t prev_quantizer;
