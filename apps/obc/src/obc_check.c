@@ -5,6 +5,7 @@
  */
 
 #include "obc_check.h"
+#include <stdbool.h>
 #include <stdio.h>
 
 /* 
@@ -59,5 +60,3 @@ bool obc_check(void) {
 
     return ping_ok && flash_ok && RTC_ok;
 }
-
-

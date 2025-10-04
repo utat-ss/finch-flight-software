@@ -5,7 +5,7 @@
  */
 
 /**
- *  @file 
+ * @file 
  * @brief Idle command sequence implementation 
 */
 
