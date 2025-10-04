@@ -1,4 +1,11 @@
-/** @file idle.h
+/*
+ * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/** 
+ * @file idle.h
  * @brief Header for Idle Command Sequence Logic
 */
 
