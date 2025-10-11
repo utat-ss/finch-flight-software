@@ -52,7 +52,9 @@ void encode_prediction(const vec3 *N, Predictions prediction, EncoderOut out)
 					}
 				}
 
-				// [5.4.3.2.2] Sample adaptive entropy encoder
+				/*
+				 * [5.4.3.2.2] Sample adaptive entropy encoder
+				 */
 				int32_t j = get_predictions(prediction, z, y, x);
 				int32_t k;
 
