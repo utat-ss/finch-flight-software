@@ -6,7 +6,7 @@
 
 #include <finch/ccsds123b/image.h>
 
-vec3 N = (vec3){ 3, 4, 4 };
+vec3 N = (vec3){3, 4, 4};
 int img[3][4][4];
 
 void img_init(void)

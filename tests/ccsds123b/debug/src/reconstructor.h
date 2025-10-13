@@ -14,28 +14,18 @@
 /*
  * Outputs the predicted image.
  */
-void decode_encoding(
-	const vec3 * N,
-	char encoding[N->z][N->y][N->x][32],
-	int prediction[N->z][N->y][N->x]
-);
+void decode_encoding(const vec3 *N, char encoding[N->z][N->y][N->x][32],
+		     int prediction[N->z][N->y][N->x]);
 
 /*
  * Decodes a single codeword.
  */
-void decode_gpo2(
-	const char code[32],
-	int *j,
-	int *k
-);
+void decode_gpo2(const char code[32], int *j, int *k);
 
 /*
  * Outputs the original image.
  */
-void reconstruct_prediction(
-	const vec3 * N,
-	int prediction[N->z][N->y][N->x],
-	int image[N->z][N->y][N->x]
-);
+void reconstruct_prediction(const vec3 *N, int prediction[N->z][N->y][N->x],
+			    int image[N->z][N->y][N->x]);
 
 #endif /* FINCH_INCLUDE_RECONSTRUCTOR_H */

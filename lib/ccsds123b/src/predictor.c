@@ -67,12 +67,15 @@ void predict_image(const vec3 *N, Predictions p)
 
 					weights[t + 1] = update_weight(
 						weights[t + 1], /* omega_t: current weight */
-						ez, /* e_z_t: prediction error */
-						ph, /* p_t: scaling exponent */
-						0, /* xi_z_i: default to 0 */
-						get_local_diffs(local_diffs, z, y, x).central, /* d_z_i_t1: central local difference */
+						ez,             /* e_z_t: prediction error */
+						ph,             /* p_t: scaling exponent */
+						0,              /* xi_z_i: default to 0 */
+						get_local_diffs(local_diffs, z, y, x)
+							.central,    /* d_z_i_t1: central local
+									difference */
 						-(1 << (Omega + 2)), /* omega_min: -2^(Omega+2) */
-						(1 << (Omega + 2)) - 1 /* omega_max: 2^(Omega+2) - 1 */
+						(1 << (Omega + 2)) -
+							1 /* omega_max: 2^(Omega+2) - 1 */
 					);
 				}
 
@@ -83,11 +86,12 @@ void predict_image(const vec3 *N, Predictions p)
 				int32_t pred_cent_local_diff =
 					compute_pred_cent_local_diff(z, y, x, local_diffs, weights);
 
-				int64_t high_res_pred_sample =
-					compute_high_res_pred_sample(pred_cent_local_diff, local_sum, Omega, R, Smid, Smax, Smin);
+				int64_t high_res_pred_sample = compute_high_res_pred_sample(
+					pred_cent_local_diff, local_sum, Omega, R, Smid, Smax,
+					Smin);
 
-				int64_t double_res_pred_sample =
-					double_resolution_predicted_sample(high_res_pred_sample, z, t);
+				int64_t double_res_pred_sample = double_resolution_predicted_sample(
+					high_res_pred_sample, z, t);
 				dbl_res = double_res_pred_sample;
 
 				int64_t predicted_sample_value =
@@ -97,18 +101,15 @@ void predict_image(const vec3 *N, Predictions p)
 				 * Quantizer
 				 */
 
-				int64_t prediction_residual =
-					compute_prediction_residual(img_get_pxl(z, y, x), predicted_sample_value);
+				int64_t prediction_residual = compute_prediction_residual(
+					img_get_pxl(z, y, x), predicted_sample_value);
 
 				int64_t quantizer_index =
 					compute_quantizer_index(prediction_residual);
 
-				int64_t mapped_quantizer_index =
-					compute_mapped_quantizer_index(
-						quantizer_index,
-						double_res_pred_sample,
-						predicted_sample_value);
-
+				int64_t mapped_quantizer_index = compute_mapped_quantizer_index(
+					quantizer_index, double_res_pred_sample,
+					predicted_sample_value);
 
 				/*
 				 * Prediction
@@ -131,14 +132,14 @@ int32_t compute_local_sum(int z, int y, int x)
 	case LocalSum_WIDE_NEIGHBOR: {
 		if (y > 0 && x > 0 && x < N->x - 1) {
 			return img_get_pxl(z, y, x - 1) + img_get_pxl(z, y - 1, x - 1) +
-				   img_get_pxl(z, y - 1, x) + img_get_pxl(z, y - 1, x + 1);
+			       img_get_pxl(z, y - 1, x) + img_get_pxl(z, y - 1, x + 1);
 		} else if (y == 0 && x > 0) {
 			return 4 * img_get_pxl(z, y, x);
 		} else if (y > 0 && x == 0) {
 			return 2 * (img_get_pxl(z, y - 1, x) + img_get_pxl(z, y - 1, x + 1));
 		} else if (y > 0 && x == N->x - 1) {
 			return img_get_pxl(z, y, x - 1) + img_get_pxl(z, y - 1, x - 1) +
-				   (2 * img_get_pxl(z, y - 1, x));
+			       (2 * img_get_pxl(z, y - 1, x));
 		} else {
 			/*
 			 * The value of local sum at t=0 is undefined since it is not
@@ -152,7 +153,7 @@ int32_t compute_local_sum(int z, int y, int x)
 	case LocalSum_NARROW_NEIGHBOR: {
 		if (y > 0 && 0 < x && x < N->x - 1) {
 			return img_get_pxl(z, y - 1, x - 1) + 2 * img_get_pxl(z, y - 1, x) +
-				   img_get_pxl(z, y - 1, x + 1);
+			       img_get_pxl(z, y - 1, x + 1);
 		} else if (y == 0 && x > 0 && z > 0) {
 			return 4 * img_get_pxl(z - 1, y, x - 1);
 		} else if (y > 0 && x == 0) {
@@ -176,7 +177,7 @@ LocalDiff compute_local_diffs(int z, int y, int x, int32_t local_sum)
 	 * t=0 is not defined.
 	 */
 	if (x == 0 && y == 0) {
-		return (LocalDiff){ 0, 0, 0, 0 };
+		return (LocalDiff){0, 0, 0, 0};
 	}
 
 	LocalDiff ld;
@@ -216,7 +217,8 @@ LocalDiff compute_local_diffs(int z, int y, int x, int32_t local_sum)
 	return ld;
 }
 
-int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs local_diffs, int32_t const *weights)
+int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs local_diffs,
+				     int32_t const *weights)
 {
 	if (x == 0 && y == 0) {
 		return 0;
@@ -257,8 +259,8 @@ void initialize_weights(int32_t *weights, int32_t weights_size, int z, int32_t o
 	}
 }
 
-int32_t update_weight(int32_t omega_t, int32_t e_z_t, int32_t p_t, int32_t xi_z_i,
-	int32_t d_z_i_t1, int32_t omega_min, int32_t omega_max)
+int32_t update_weight(int32_t omega_t, int32_t e_z_t, int32_t p_t, int32_t xi_z_i, int32_t d_z_i_t1,
+		      int32_t omega_min, int32_t omega_max)
 {
 	/*
 	 * Step 1: Compute sgn[e_z(t)]
@@ -307,17 +309,18 @@ int64_t mod(int64_t M, int64_t n)
 	return M - n * (int64_t)(M / n);
 }
 
-int64_t compute_high_res_pred_sample(int32_t pred_cent_local_diff, int32_t local_sum, int32_t Omega, int32_t R, int32_t Smid, int32_t Smax, int32_t Smin)
+int64_t compute_high_res_pred_sample(int32_t pred_cent_local_diff, int32_t local_sum, int32_t Omega,
+				     int32_t R, int32_t Smid, int32_t Smax, int32_t Smin)
 {
 	/*
 	 * The calculation shown at 4.7.2 can be represented in this format,
 	 *   clip(modR(c1) + c2 + c3, {clip_min, clip_max})
 	 */
 
-	uint64_t const two_R		 = 1ULL << R;
+	uint64_t const two_R = 1ULL << R;
 	uint64_t const two_R_minus_1 = 1ULL << (R - 1);
 
-	int64_t const two_O		   = 1ULL << Omega;
+	int64_t const two_O = 1ULL << Omega;
 	int64_t const two_O_plus_1 = 1ULL << (Omega + 1);
 	int64_t const two_O_plus_2 = 1ULL << (Omega + 2);
 
@@ -370,7 +373,9 @@ int64_t compute_quantizer_index(int64_t prediction_residual)
 	return prediction_residual;
 }
 
-int64_t compute_mapped_quantizer_index(int64_t quantizer_index, int64_t double_res_pred_sample_value, int64_t predicted_sample_value)
+int64_t compute_mapped_quantizer_index(int64_t quantizer_index,
+				       int64_t double_res_pred_sample_value,
+				       int64_t predicted_sample_value)
 {
 	int64_t theta = min(predicted_sample_value - Smin, Smax - predicted_sample_value);
 

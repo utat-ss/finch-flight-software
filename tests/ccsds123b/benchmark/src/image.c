@@ -9,10 +9,10 @@
 
 #include <finch/ccsds123b/util.h>
 
-vec3 N_tile = (vec3){ N_TILE_Z, N_TILE_Y, N_TILE_X };
+vec3 N_tile = (vec3){N_TILE_Z, N_TILE_Y, N_TILE_X};
 int img[N_TILE_Z][N_TILE_Y][N_TILE_X];
 
-vec3 N = (vec3) { N_Z, N_Y, N_X };
+vec3 N = (vec3){N_Z, N_Y, N_X};
 
 void img_init(void)
 {

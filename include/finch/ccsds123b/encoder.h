@@ -14,18 +14,11 @@
 /*
  * [5.4.2.3] Band Sequential Order.
  */
-void encode_prediction(
-	const vec3 * N,
-	Predictions prediction,
-	EncoderOut encoding
-);
+void encode_prediction(const vec3 *N, Predictions prediction, EncoderOut encoding);
 
 /*
  * [5.4.3.2.2.1] Length limited Golomb-power-of-2 (GPO2)
  */
-void encode_gpo2(
-	int j, int k,
-	EncoderOutItem out
-);
+void encode_gpo2(int j, int k, EncoderOutItem out);
 
 #endif /* FINCH_INCLUDE_ENCODER_H */

@@ -11,10 +11,8 @@
 #include <math.h>
 #include <string.h>
 
-void decode_encoding(
-	const vec3 * N,
-	char encoding[N->z][N->y][N->x][32],
-	int prediction[N->z][N->y][N->x])
+void decode_encoding(const vec3 *N, char encoding[N->z][N->y][N->x][32],
+		     int prediction[N->z][N->y][N->x])
 {
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
@@ -44,9 +42,9 @@ void decode_gpo2(const char in[32], int *j, int *k)
 		return;
 	}
 
-		/*
-		 * Determine k and prefix based on the structure of the encoded string
-		 */
+	/*
+	 * Determine k and prefix based on the structure of the encoded string
+	 */
 	/*
 	 * The suffix is the initial 'k' bits
 	 * The '1' after the suffix marks the end of the suffix and the start of the prefix '0's
@@ -135,10 +133,8 @@ void decode_gpo2(const char in[32], int *j, int *k)
 	}
 }
 
-void reconstruct_prediction(
-	const vec3 * N,
-	int prediction[N->z][N->y][N->x],
-	int image[N->z][N->y][N->x])
+void reconstruct_prediction(const vec3 *N, int prediction[N->z][N->y][N->x],
+			    int image[N->z][N->y][N->x])
 {
 	LocalDiff local_diff[N->z][N->y][N->z];
 
@@ -169,30 +165,43 @@ void reconstruct_prediction(
 
 				local_diff[z][y][x] = compute_local_diffs(z, y, x, local_sum);
 
-				int32_t pred_cent_local_diff = compute_pred_cent_local_diff(z, y, x, local_diff, weights);
-				int64_t high_res_pred_sample = compute_high_res_pred_sample(pred_cent_local_diff, local_sum, Omega, R, Smid, Smax, Smin);
-				int64_t double_res_pred_sample = double_resolution_predicted_sample(high_res_pred_sample, z, t);
-				int64_t predicted_sample_value = predicted_sample(double_res_pred_sample);
+				int32_t pred_cent_local_diff =
+					compute_pred_cent_local_diff(z, y, x, local_diff, weights);
+				int64_t high_res_pred_sample = compute_high_res_pred_sample(
+					pred_cent_local_diff, local_sum, Omega, R, Smid, Smax,
+					Smin);
+				int64_t double_res_pred_sample = double_resolution_predicted_sample(
+					high_res_pred_sample, z, t);
+				int64_t predicted_sample_value =
+					predicted_sample(double_res_pred_sample);
 
 				/*
-				 * Step 2: Reverse compute_mapped_quantizer_index to get quantizer_index
+				 * Step 2: Reverse compute_mapped_quantizer_index to get
+				 * quantizer_index
 				 */
-				int64_t theta = fmin(predicted_sample_value - Smin, Smax - predicted_sample_value);
+				int64_t theta = fmin(predicted_sample_value - Smin,
+						     Smax - predicted_sample_value);
 				int64_t quantizer_index;
 
 				if (mapped_quantizer_index > 2 * theta) {
-					quantizer_index = mapped_quantizer_index - theta; /* Case: abs(quantizer_index) > theta */
+					quantizer_index =
+						mapped_quantizer_index -
+						theta; /* Case: abs(quantizer_index) > theta */
 				} else {
 					int64_t is_even = mapped_quantizer_index % 2 == 0;
-					int64_t abs_q = is_even ? mapped_quantizer_index / 2 : (mapped_quantizer_index + 1) / 2;
-					int64_t d = double_res_pred_sample % 2; /* Parity from double_res_pred_sample */
+					int64_t abs_q = is_even ? mapped_quantizer_index / 2
+								: (mapped_quantizer_index + 1) / 2;
+					int64_t d = double_res_pred_sample %
+						    2; /* Parity from double_res_pred_sample */
 
 					quantizer_index = is_even ? abs_q : -abs_q;
-					quantizer_index *= (d == 0 ? 1 : -1); /* Apply sign based on parity */
+					quantizer_index *=
+						(d == 0 ? 1 : -1); /* Apply sign based on parity */
 				}
 
 				/*
-				 * Step 3: Reverse compute_quantizer_index to get prediction_residual
+				 * Step 3: Reverse compute_quantizer_index to get
+				 * prediction_residual
 				 */
 				int64_t prediction_residual;
 

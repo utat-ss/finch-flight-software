@@ -17,15 +17,17 @@
 
 ZTEST_SUITE(stdout_test, NULL, NULL, NULL, NULL, NULL);
 
-ZTEST(stdout_test, test_stdout) {
+ZTEST(stdout_test, test_stdout)
+{
 	img_init();
 	const vec3 *N = img_get_N();
 
 	printk("-----------------------------------\nImage\n\n");
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
+			for (int x = 0; x < N->x; ++x) {
 				printk("%d ", img_get_pxl(z, y, x));
+			}
 			printk("\n");
 		}
 		printk("\n");
@@ -38,8 +40,9 @@ ZTEST(stdout_test, test_stdout) {
 	printk("-----------------------------------\nPrediction\n\n");
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
+			for (int x = 0; x < N->x; ++x) {
 				printk("%d ", prediction[z][y][x]);
+			}
 			printk("\n");
 		}
 		printk("\n");
@@ -52,8 +55,9 @@ ZTEST(stdout_test, test_stdout) {
 	printk("-----------------------------------\nEncoding\n\n");
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
+			for (int x = 0; x < N->x; ++x) {
 				printk("%s ", encoding[z][y][x]);
+			}
 			printk("\n");
 		}
 		printk("\n");
@@ -66,8 +70,9 @@ ZTEST(stdout_test, test_stdout) {
 	printk("-----------------------------------\nDecoding\n\n");
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
+			for (int x = 0; x < N->x; ++x) {
 				printk("%d ", prediction_new[z][y][x]);
+			}
 			printk("\n");
 		}
 		printk("\n");
@@ -80,8 +85,9 @@ ZTEST(stdout_test, test_stdout) {
 	printk("-----------------------------------\nReconstruction\n\n");
 	for (int z = 0; z < N->z; ++z) {
 		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
+			for (int x = 0; x < N->x; ++x) {
 				printk("%d ", image_new[z][y][x]);
+			}
 			printk("\n");
 		}
 		printk("\n");

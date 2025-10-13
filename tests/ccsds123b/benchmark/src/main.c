@@ -14,7 +14,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-
 Predictions prediction;
 EncoderOut encoding;
 

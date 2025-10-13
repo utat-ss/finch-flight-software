@@ -15,11 +15,11 @@
 
 static void compute_k(int accumulator, int counter, int *k)
 {
-	if (2 * counter > accumulator + (int32_t)(49/128.0 * counter)) {
+	if (2 * counter > accumulator + (int32_t)(49 / 128.0 * counter)) {
 		*k = 0;
 	} else {
 		for (*k = 1; *k <= D - 2; ++(*k)) {
-			if (counter * (1 << *k) > accumulator + (int32_t)(49/128.0 * counter)) {
+			if (counter * (1 << *k) > accumulator + (int32_t)(49 / 128.0 * counter)) {
 				*k -= 1;
 				break;
 			}
@@ -40,7 +40,8 @@ void encode_prediction(const vec3 *N, Predictions prediction, EncoderOut out)
 					if (counter < 15) {
 						accumulator += get_predictions(prediction, z, y, x);
 					} else if (counter == 15) {
-						int32_t p = get_predictions(prediction, z, y - 1, N->x - 1);
+						int32_t p = get_predictions(prediction, z, y - 1,
+									    N->x - 1);
 
 						accumulator = (accumulator + p + 1) / 2.0f;
 					}
