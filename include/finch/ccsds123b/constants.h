@@ -25,13 +25,19 @@ extern int const Smid;
  * 0 <= P <= 15
  */
 extern int const P;
-inline int Pz(int z) { return (z < P) ? z : P; }
+inline int Pz(int z)
+{
+	return (z < P) ? z : P;
+}
 
 /*
  * [4.3] Number of local difference values used for prediction at each sample
  * in band z.
  */
-inline int Cz(int z) { return Pz(z) + 3; }
+inline int Cz(int z)
+{
+	return Pz(z) + 3;
+}
 
 /*
  * [4.6.1.2] Resolution of the weight values.
