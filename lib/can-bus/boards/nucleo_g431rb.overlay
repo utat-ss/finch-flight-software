@@ -1,6 +1,11 @@
+/*
+ * Device tree overlay for CAN (FDCAN1) on STM32G431RB Nucleo
+ * Pins: PA12 (TX), PA11 (RX)
+ */
+
 / {
     chosen {
-        fdcan1 = &fdcan1;
+        zephyr,canbus = &fdcan1;  /* ← CORRECT! */
     };
 };
 
@@ -9,21 +14,22 @@
     status = "okay";
     pinctrl-0 = <&fdcan1_tx_pa12 &fdcan1_rx_pa11>;
     pinctrl-names = "default";
-    bus-speed = <500000>; // bitrate
-    bus-speed-data = <1000000>;
-    sample-point = <750>;
+    bus-speed = <500000>;           // Standard CAN bitrate (500 kbps)
+    bus-speed-data = <1000000>;     // CAN FD data phase bitrate (1 Mbps)
+    sample-point = <875>;           // Changed from 750 to 875 (87.5%)
+    sample-point-data = <875>;      // Add this for CAN FD data phase
 };
 
 &pinctrl {
     fdcan1_tx_pa12: fdcan1_tx_pa12 {
-        pinmux = <STM32_PINMUX('A', 12, AF9)>; // TX = PA12
+        pinmux = <STM32_PINMUX('A', 12, AF9)>;
         bias-disable;
         drive-push-pull;
-        slew-rate = "low-speed";
+        slew-rate = "very-high-speed";  // Changed from "low-speed" for better signal integrity
     };
 
     fdcan1_rx_pa11: fdcan1_rx_pa11 {
-        pinmux = <STM32_PINMUX('A', 11, AF9)>; // RX = PA11
-        bias-disable;
+        pinmux = <STM32_PINMUX('A', 11, AF9)>;
+        bias-pull-up;  // Changed from bias-disable - pull-up is better for CAN RX
     };
 };
