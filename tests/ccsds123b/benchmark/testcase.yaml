@@ -1,0 +1,4 @@
+tests:
+  ccsds123b.benchmark:
+    platform_allow:
+      - nucleo_h743zi
