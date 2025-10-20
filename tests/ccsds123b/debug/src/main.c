@@ -15,9 +15,9 @@
 #include <zephyr/kernel.h>
 #include <zephyr/ztest.h>
 
-ZTEST_SUITE(stdout_test, NULL, NULL, NULL, NULL, NULL);
+ZTEST_SUITE(debug_test, NULL, NULL, NULL, NULL, NULL);
 
-ZTEST(stdout_test, test_stdout) {
+ZTEST(debug_test, test_stdout) {
 	img_init();
 	const vec3 *N = img_get_N();
 
