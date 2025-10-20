@@ -1,4 +1,4 @@
-name: Zephyr Library Build Check
+name: Build Tests
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  build-libs:
+  build-tests:
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -41,7 +41,7 @@ jobs:
           chmod +x ./scripts/setup_west_workspace.sh
           ./scripts/setup_west_workspace.sh
 
-      - name: Build all libraries
+      - name: Build all tests
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
