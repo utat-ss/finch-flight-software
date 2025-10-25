@@ -10,6 +10,12 @@ manifest:
           - hal_stm32
           - cmsis_6
       west-commands: scripts/west-commands.yml
+    - name: mcuboot
+      revision: d5b0dcb9aaee397fc105ae2228e8030038c3d871
+      path: bootloader/mcuboot
+      url: https://github.com/mcu-tools/mcuboot.git
+      groups:
+       - bootloader
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git
       revision: f8c366e5dfd9879990747d815ff5b2c2dda4dfe3

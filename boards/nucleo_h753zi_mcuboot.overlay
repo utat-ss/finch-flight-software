@@ -1,0 +1,43 @@
+mkdir -p /workspace/boards
+cat > /workspace/boards/nucleo_h753zi_mcuboot.overlay << 'EOF'
+/delete-node/ &boot_partition;
+/delete-node/ &slot0_partition;
+/delete-node/ &slot1_partition;
+/delete-node/ &scratch_partition;
+
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+        
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 0x00020000>;  /* 128KB */
+            read-only;
+        };
+        
+        slot0_partition: partition@20000 {
+            label = "image-0";
+            reg = <0x00020000 0x00060000>;  /* 384KB */
+        };
+        
+        slot1_partition: partition@80000 {
+            label = "image-1";
+            reg = <0x00080000 0x00060000>;  /* 384KB */
+        };
+        
+        scratch_partition: partition@e0000 {
+            label = "image-scratch";
+            reg = <0x000e0000 0x00020000>;  /* 128KB */
+        };
+    };
+};
+
+/ {
+    chosen {
+        zephyr,code-partition = &slot0_partition;
+    };
+};
+EOF
+
