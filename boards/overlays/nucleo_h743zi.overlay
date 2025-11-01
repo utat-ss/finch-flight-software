@@ -1,0 +1,16 @@
+&usart2 {
+	pinctrl-0 = <&usart2_tx_pd5 &usart2_rx_pd6>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
+
+&pinctrl {
+	usart2_tx_pd5: usart2_tx_pd5 {
+		pinmux = <STM32_PINMUX('D', 5, AF7)>;
+	};
+
+	usart2_rx_pd6: usart2_rx_pd6 {
+		pinmux = <STM32_PINMUX('D', 6, AF7)>;
+	};
+};
