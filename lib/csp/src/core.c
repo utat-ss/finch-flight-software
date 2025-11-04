@@ -13,6 +13,12 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
+#if IS_ENABLED(CONFIG_FINCH_CSP_HAVE_CAN)
+#include <csp/drivers/can_zephyr.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#endif
+
 LOG_MODULE_REGISTER(finch_csp);
 
 K_THREAD_STACK_DEFINE(finch_csp_router_stack, CONFIG_FINCH_CSP_ROUTER_STACK_SIZE);
@@ -20,6 +26,12 @@ static struct k_thread finch_csp_router_thread_data;
 static k_tid_t finch_csp_router_tid;
 static K_MUTEX_DEFINE(finch_csp_lock);
 static bool finch_csp_initialized;
+
+#if IS_ENABLED(CONFIG_FINCH_CSP_HAVE_CAN)
+static const struct device *const finch_csp_can_dev =
+	DEVICE_DT_GET(DT_CHOSEN(zephyr_canbus));
+static csp_iface_t *finch_csp_can_iface;
+#endif
 
 static void finch_csp_router_thread(void *arg1, void *arg2, void *arg3)
 {
@@ -67,6 +79,38 @@ static int finch_csp_bind_services(void)
 	return 0;
 }
 
+#if IS_ENABLED(CONFIG_FINCH_CSP_HAVE_CAN)
+static int finch_csp_init_can(void)
+{
+	if (!device_is_ready(finch_csp_can_dev)) {
+		LOG_ERR("CAN device %s not ready", finch_csp_can_dev->name);
+		return -ENODEV;
+	}
+
+	int ret = csp_can_open_and_add_interface(finch_csp_can_dev,
+						 CONFIG_FINCH_CSP_CAN_IFNAME,
+						 CONFIG_FINCH_CSP_NODE_ADDRESS,
+						 CONFIG_FINCH_CSP_CAN_BITRATE,
+						 CONFIG_FINCH_CSP_NODE_ADDRESS,
+						 CONFIG_FINCH_CSP_CAN_FILTER_MASK,
+						 &finch_csp_can_iface);
+
+	if (ret != CSP_ERR_NONE) {
+		LOG_ERR("Failed to open CSP CAN interface (%d)", ret);
+		return -EIO;
+	}
+
+	finch_csp_can_iface->is_default = 1;
+
+	LOG_INF("CSP CAN interface up: %s (addr=%u, bitrate=%u)",
+		finch_csp_can_iface->name,
+		CONFIG_FINCH_CSP_NODE_ADDRESS,
+		CONFIG_FINCH_CSP_CAN_BITRATE);
+
+	return 0;
+}
+#endif /* CONFIG_FINCH_CSP_HAVE_CAN */
+
 int finch_csp_init(void)
 {
 	int ret = 0;
@@ -89,6 +133,13 @@ int finch_csp_init(void)
 	if (ret < 0) {
 		goto out;
 	}
+
+#if IS_ENABLED(CONFIG_FINCH_CSP_HAVE_CAN)
+	ret = finch_csp_init_can();
+	if (ret < 0) {
+		goto out;
+	}
+#endif
 
 	finch_csp_router_tid = k_thread_create(
 		&finch_csp_router_thread_data,

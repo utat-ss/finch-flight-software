@@ -47,4 +47,41 @@ config FINCH_CSP_ROUTER_PRIORITY
 	help
 	  Zephyr thread priority for the CSP router thread.
 
+config FINCH_CSP_HAVE_CAN
+	bool "Use Zephyr CAN as a CSP transport"
+	depends on CAN
+	depends on CSP_HAVE_CAN
+	default y if CAN
+	help
+	  Bring up the Zephyr CAN bus (selected via the zephyr,canbus
+	  chosen node) as a CSP interface during finch_csp_init(). The
+	  interface is registered as the default route, so all outgoing
+	  CSP traffic without an explicit route flows over CAN.
+
+if FINCH_CSP_HAVE_CAN
+
+config FINCH_CSP_CAN_IFNAME
+	string "CSP CAN interface name"
+	default "CAN0"
+	help
+	  Name registered with libcsp for the CAN interface.
+
+config FINCH_CSP_CAN_BITRATE
+	int "CSP CAN bus bitrate (bps)"
+	default 1000000
+	help
+	  Bitrate applied to the CAN controller during CSP bring-up.
+	  This overrides the bitrate set in the device tree.
+
+config FINCH_CSP_CAN_FILTER_MASK
+	hex "CSP CAN RX filter mask (destination address bits)"
+	default 0x3FFF
+	range 0x0000 0x3FFF
+	help
+	  Bit mask applied to the destination address field of incoming
+	  CFP frames. The default of 0x3FFF accepts only frames addressed
+	  to this node. Use 0x0000 to accept all frames (promiscuous).
+
+endif # FINCH_CSP_HAVE_CAN
+
 endif # FINCH_CSP
