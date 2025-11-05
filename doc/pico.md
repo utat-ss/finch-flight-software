@@ -6,10 +6,11 @@
 
 https://docs.micropython.org/en/latest/reference/mpremote.html
 
-# flashing from command line
+# Running from command line
 
 From the main project folder:
 `mpremote run scripts/mock_camera.py`
 
 or `mpremote fs cp mock_camera.py :main.py`
 
+MicroPython runtime looks for the `main.py` file and runs it.
