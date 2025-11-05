@@ -1,7 +1,7 @@
 import uasyncio as asyncio
-from machine import UART
+from machine import UART, Pin
 
-uart = UART(1, 115200)
+uart = UART(0, 115200, tx=Pin(12), rx=Pin(13))
 rx_buf = bytearray()
 loop = asyncio.get_event_loop()
 

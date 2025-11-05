@@ -17,6 +17,7 @@
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,code-partition = &slot0_partition;
+		zephyr,console = &uart4;
 	};
 
 	leds: leds {
@@ -77,6 +78,13 @@
 	};
 };
 
+&uart4 {
+	pinctrl-0 = <&uart4_tx_ph13 &uart4_rx_ph14>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
+
 &usart3 {
 	pinctrl-0 = <&usart3_tx_pb10 &usart3_rx_pb11>;
 	pinctrl-names = "default";
@@ -85,6 +93,14 @@
 };
 
 &pinctrl {
+	uart4_tx_ph13: uart4_tx_ph13 {
+		pinmux = <STM32_PINMUX('H', 13, AF8)>;
+	};
+
+	uart4_rx_ph14: uart4_rx_ph14 {
+		pinmux = <STM32_PINMUX('H', 14, AF8)>;
+	};
+
 	usart3_tx_pb10: usart3_tx_pb10 {
 		pinmux = <STM32_PINMUX('B', 10, AF7)>;
 	};
