@@ -1,0 +1,30 @@
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 0x00020000>;  /* 128KB */
+            read-only;
+        };
+
+        slot0_partition: partition@20000 {
+            label = "image-0";
+            reg = <0x00020000 0x00060000>;  /* 384KB */
+        };
+
+        slot1_partition: partition@80000 {
+            label = "image-1";
+            reg = <0x00080000 0x00060000>;  /* 384KB */
+        };
+    };
+};
+
+/ {
+    chosen {
+        zephyr,code-partition = &boot_partition;
+    };
+};
+

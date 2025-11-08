@@ -1,0 +1,34 @@
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 DT_SIZE_K(128)>;
+        };
+
+        slot0_partition: partition@20000 {
+            label = "image-0";
+            reg = <0x00020000 DT_SIZE_K(384)>;
+        };
+
+        slot1_partition: partition@80000 {
+            label = "image-1";
+            reg = <0x00080000 DT_SIZE_K(384)>;
+        };
+
+        scratch_partition: partition@e0000 {
+            label = "image-scratch";
+            reg = <0x000e0000 DT_SIZE_K(128)>;
+        };
+    };
+};
+
+/ {
+    chosen {
+        zephyr,code-partition = &slot0_partition;
+    };
+};
+
