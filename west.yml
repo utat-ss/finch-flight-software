@@ -3,7 +3,7 @@ manifest:
   projects:
     - name: zephyr
       url: https://github.com/zephyrproject-rtos/zephyr.git
-      revision: 413b789deb391d3a37d06b463288a5fe765ee57e # v4.2.0
+      revision: 3568e1b6d5cdd51a6b964a2a1d6d29200fea2056 # v4.3.0
       path: zephyr
       import:
         name-allowlist:
