@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
- #include <zephyr/kernel.h>
- #include <zephyr/drivers/can.h>
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/can.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(obc);
@@ -23,14 +23,25 @@ int main(void)
 	};
 
 	LOG_INF("Starting CAN send");
+	
+	LOG_INF("DEVICE IS READY: %d", device_is_ready(can));
+
+	ret = can_start(can);
+
+	LOG_INF("CAN STARTED: %d", ret);
 
 	/* 3000ms timeout */
-	ret = can_send(can, &frame, K_MSEC(3000), NULL, NULL);
-	if (ret) {
-		LOG_ERR("Sending failed [%d]", ret);
-		return 0;
+	while (true) {
+		k_msleep(5000);
+		ret = can_send(can, &frame, K_MSEC(3000), NULL, NULL);
+		if (ret) {
+			LOG_ERR("Sending failed [%d]", ret);
+			continue;
+		}
+
+		LOG_INF("CAN sent successfully");
+		break;
 	}
 
-	LOG_INF("CAN sent successfully");
 	return 0;
 }

@@ -8,6 +8,7 @@
 
 #include <st/g4/stm32g431Xb.dtsi>
 #include <dt-bindings/pinctrl/stm32-pinctrl.h>
+#include <zephyr/dt-bindings/clock/stm32g4_clock.h>
 
 / {
 	model = "finch,obc";
@@ -50,7 +51,7 @@
 };
 
 &pll {
-    status = "disabled";
+	status = "disabled";
 };
 
 &rcc {
@@ -83,7 +84,8 @@
 };
 
 &fdcan1 {
-	bitrate = <500000>;
+	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x02000000>, <&rcc STM32_SRC_PCLK1 2>;
+	bitrate = <100000>;
 	sample-point = <875>;
 
 	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
