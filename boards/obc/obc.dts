@@ -41,28 +41,27 @@
 	};
 };
 
+&clk_hsi {
+    status = "okay";
+};
+
 &clk_hse {
-	clock-frequency = <DT_FREQ_M(24)>;
-	status = "okay";
+    status = "disabled";
 };
 
 &pll {
-	div-m = <6>;
-	mul-n = <85>;
-	div-p = <7>;
-	div-q = <2>;
-	div-r = <2>;
-	clocks = <&clk_hse>;
-	status = "okay";
+    status = "disabled";
 };
 
 &rcc {
-	clocks = <&pll>;
-	clock-frequency = <DT_FREQ_M(170)>;
-	ahb-prescaler = <1>;
-	apb1-prescaler = <1>;
-	apb2-prescaler = <1>;
-	status = "okay";
+    clocks = <&clk_hsi>;
+    clock-frequency = <DT_FREQ_M(16)>;
+
+    ahb-prescaler  = <1>;
+    apb1-prescaler = <1>;
+    apb2-prescaler = <1>;
+
+    status = "okay";
 };
 
 &flash0 {
