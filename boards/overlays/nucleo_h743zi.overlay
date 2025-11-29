@@ -1,0 +1,11 @@
+&quadspi {
+    status = "okay";
+    pinctrl-0 = <&ospi1_clk_pb2 &ospi1_ncs_pb6 &ospi1_io0_pe12 &ospi1_io1_pe13 &ospi1_io2_pe14 &ospi1_io3_pe15>;
+    pinctrl-names = "default";
+
+    flash0: flash@0 {
+        compatible = "jedec,spi-nor";
+        reg = <0>;
+        spi-max-frequency = <4000000>;  // Adjust to your flash max freq (e.g. 108 MHz for H7)
+    };
+};

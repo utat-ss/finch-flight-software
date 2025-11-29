@@ -91,21 +91,3 @@
 		pinmux = <STM32_PINMUX('B', 7, AF7)>;
 	};
 };
-
-&quadspi {
-    status = "okay";
-    pinctrl-0 = <&ospi1_clk_pb2 &ospi1_ncs_pb6 &ospi1_io0_pe12 &ospi1_io1_pe13 &ospi1_io2_pe14 &ospi1_io3_pe15>;
-    pinctrl-names = "default";
-
-    flash0: flash@0 {
-        compatible = "jedec,spi-nor";
-        reg = <0>;
-        spi-max-frequency = <108000000>;   // Adjust to your flash max freq (e.g. 108 MHz for H7)
-        size = <67108864>;                 // 64 Mbit = 8 MB (for W25Q64, adjust for your flash)
-        jedec-id = [ c2 20 18 ];           // Optional: Macronix MX25R6435F example
-                                           // Zephyr will auto-detect via SFDP if not set
-        has-dpd;                           // If flash supports Deep Power Down
-        t-enter-dpd = <10000>;             // 10us
-        t-exit-dpd = <30000>;              // 30us
-    };
-};
