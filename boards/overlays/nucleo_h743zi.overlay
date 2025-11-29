@@ -1,3 +1,17 @@
+&pinctrl {
+    qspi_mosi_pd11: qspi_mosi_pd11 {
+		pinmux = <STM32_PINMUX('D', 11, AF9)>;
+	};
+
+	qspi_miso_pd12: qspi_miso_pd12 {
+		pinmux = <STM32_PINMUX('D', 12, AF9)>;
+	};
+
+    qspi_dq2_pe2: qspi_dq2_pe2 {
+		pinmux = <STM32_PINMUX('E', 2, AF9)>;
+	};
+};
+
 &quadspi {
     status = "okay";
     pinctrl-0 = <&ospi1_clk_pb2 &ospi1_ncs_pb6 &ospi1_io0_pe12 &ospi1_io1_pe13 &ospi1_io2_pe14 &ospi1_io3_pe15>;
