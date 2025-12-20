@@ -24,7 +24,7 @@
     flash10: flash@0 {
         reg = <0>;
         compatible = "jedec,spi-nor";
-        spi-max-frequency = <100000>;
+        spi-max-frequency = <4000000>;
         jedec-id = [20 ba 21];
         size = <134217728>;
         status = "okay";
@@ -33,7 +33,7 @@
     flash11: flash@1 {
         reg = <1>;
         compatible = "jedec,spi-nor";
-        spi-max-frequency = <100000>;
+        spi-max-frequency = <4000000>;
         jedec-id = [20 ba 21];
         size = <134217728>;
         status = "okay";
