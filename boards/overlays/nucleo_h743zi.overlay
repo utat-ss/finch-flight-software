@@ -1,56 +1,42 @@
 &pinctrl {
-    qspi_io0_pd11: qspi_io0_pd11 {
-		pinmux = <STM32_PINMUX('D', 11, AF9)>;
+    spi_mosi_pa7: spi_mosi_pa7 {
+		pinmux = <STM32_PINMUX('A', 7, AF5)>;
 	};
 
-	qspi_io1_pd12: qspi_io1_pd12 {
-		pinmux = <STM32_PINMUX('D', 12, AF9)>;
+	spi_miso_pa6: spi_miso_pa6 {
+		pinmux = <STM32_PINMUX('A', 6, AF5)>;
 	};
 
-    qspi_io2_pe2: qspi_io2_pe2 {
-		pinmux = <STM32_PINMUX('E', 2, AF9)>;
-	};
-
-	qspi_io3_pd13: qspi_io3_pd13 {
-		pinmux = <STM32_PINMUX('D', 13, AF9)>;
-	};
-
-    qspi_clk_pb2: qspi_clk_pb2 {
-		pinmux = <STM32_PINMUX('B', 2, AF9)>;
+    spi_sclk_pa5: spi_sclk_pa5 {
+		pinmux = <STM32_PINMUX('A', 5, AF5)>;
 	};
 };
 
-/ {
-    cs_gpios: cs-gpios {
-        compatible = "gpio-leds";
-
-        qspics0: qspi-cs0 {
-            gpios = <&gpioe 4 GPIO_ACTIVE_LOW>;
-            label = "QSPI_CS0";
-        };
-
-        qspics1: qspi-cs1 {
-            gpios = <&gpioe 5 GPIO_ACTIVE_LOW>;
-            label = "QSPI_CS1";
-        };
-    };
-};
-
-&quadspi {
+&spi1 {
     status = "okay";
-    pinctrl-0 = <&qspi_clk_pb2 &qspi_io0_pd11 &qspi_io1_pd12 &qspi_io2_pe2 &qspi_io3_pd13>;
+    pinctrl-0 = <&spi_sclk_pa5 &spi_mosi_pa7 &spi_miso_pa6>;
     pinctrl-names = "default";
+    cs-gpios = <&gpioe 4 GPIO_ACTIVE_LOW>, <&gpioe 5 GPIO_ACTIVE_LOW>;
 
     #address-cells = <1>;
     #size-cells = <0>;
 
-    flash1: flash@0 {
-        status = "okay";
-        compatible = "st,stm32-qspi-nor";
+    flash10: flash@0 {
         reg = <0>;
-        qspi-max-frequency = <4000000>;
+        compatible = "jedec,spi-nor";
+        spi-max-frequency = <100000>;
         jedec-id = [20 ba 21];
         size = <134217728>;
+        status = "okay";
+    };
+
+    flash11: flash@1 {
+        reg = <1>;
+        compatible = "jedec,spi-nor";
+        spi-max-frequency = <100000>;
+        jedec-id = [20 ba 21];
+        size = <134217728>;
+        status = "okay";
     };
 };
 
