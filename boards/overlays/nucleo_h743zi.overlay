@@ -1,25 +1,56 @@
 &pinctrl {
-    qspi_mosi_pd11: qspi_mosi_pd11 {
+    qspi_io0_pd11: qspi_io0_pd11 {
 		pinmux = <STM32_PINMUX('D', 11, AF9)>;
 	};
 
-	qspi_miso_pd12: qspi_miso_pd12 {
+	qspi_io1_pd12: qspi_io1_pd12 {
 		pinmux = <STM32_PINMUX('D', 12, AF9)>;
 	};
 
-    qspi_dq2_pe2: qspi_dq2_pe2 {
+    qspi_io2_pe2: qspi_io2_pe2 {
 		pinmux = <STM32_PINMUX('E', 2, AF9)>;
+	};
+
+	qspi_io3_pd13: qspi_io3_pd13 {
+		pinmux = <STM32_PINMUX('D', 13, AF9)>;
+	};
+
+    qspi_clk_pb2: qspi_clk_pb2 {
+		pinmux = <STM32_PINMUX('B', 2, AF9)>;
 	};
 };
 
+/ {
+    qspics0: qspi-cs0 {
+        gpios = <&gpioe 4 GPIO_ACTIVE_LOW>;
+        status = "okay";
+    };
+
+    qspics1: qspi-cs1 {
+        gpios = <&gpioe 5 GPIO_ACTIVE_LOW>;
+        status = "okay";
+    };
+};
+
+
 &quadspi {
     status = "okay";
-    pinctrl-0 = <&ospi1_clk_pb2 &ospi1_ncs_pb6 &ospi1_io0_pe12 &ospi1_io1_pe13 &ospi1_io2_pe14 &ospi1_io3_pe15>;
+    pinctrl-0 = <&qspi_clk_pb2 &qspi_io0_pd11 &qspi_io1_pd12 &qspi_io2_pe2 &qspi_io3_pd13>;
     pinctrl-names = "default";
 
-    flash0: flash@0 {
-        compatible = "jedec,spi-nor";
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    flash1: flash@0 {
+        status = "okay";
+        compatible = "st,stm32-qspi-nor";
         reg = <0>;
-        spi-max-frequency = <4000000>;  // Adjust to your flash max freq (e.g. 108 MHz for H7)
+        qspi-max-frequency = <4000000>;
+        jedec-id = [20 ba 21];
+        size = <134217728>;
     };
+};
+
+&gpioe {
+    status = "okay";
 };
