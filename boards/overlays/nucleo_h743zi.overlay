@@ -21,17 +21,20 @@
 };
 
 / {
-    qspics0: qspi-cs0 {
-        gpios = <&gpioe 4 GPIO_ACTIVE_LOW>;
-        status = "okay";
-    };
+    cs_gpios: cs-gpios {
+        compatible = "gpio-leds";
 
-    qspics1: qspi-cs1 {
-        gpios = <&gpioe 5 GPIO_ACTIVE_LOW>;
-        status = "okay";
+        qspics0: qspi-cs0 {
+            gpios = <&gpioe 4 GPIO_ACTIVE_LOW>;
+            label = "QSPI_CS0";
+        };
+
+        qspics1: qspi-cs1 {
+            gpios = <&gpioe 5 GPIO_ACTIVE_LOW>;
+            label = "QSPI_CS1";
+        };
     };
 };
-
 
 &quadspi {
     status = "okay";
