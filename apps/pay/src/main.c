@@ -11,7 +11,7 @@ LOG_MODULE_REGISTER(main);
 const struct device *flash_dev = DEVICE_DT_GET(DT_NODELABEL(flash10));
 
 #define TEST_ADDRESS 0x000000
-#define TEST_SIZE    256
+#define TEST_SIZE    16
 uint8_t write_buf[TEST_SIZE];
 uint8_t read_buf[TEST_SIZE] = {0};
 
