@@ -101,8 +101,8 @@ foreach my $commit (@ARGV) {
     }
 
     if ($error) {
-	print "Commit $commit has issues. Please review the above messages.\n";
-	$exit_code = 1;
+        print "Commit $commit has issues. Please review the above messages.\n";
+        $exit_code = 1;
     } else {
         print "Commit $commit passed all checks.\n";
     }
