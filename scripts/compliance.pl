@@ -69,10 +69,10 @@ foreach my $commit (@ARGV) {
         $error = 1;
     }
 
-    # 4. Check that each line does not exceed 72 characters.
+    # 4. Check that each line does not exceed 72 characters except for URLs (HTTP/HTTPS).
     my $line_number = 1;
     foreach my $line (@lines) {
-        if (length($line) > 72) {
+        if (length($line) > 72 && $line !~ /https?:\/\//) {
             printf "Error: Commit %s, line %d exceeds 72 characters (length %d).\n", 
                 $commit, $line_number, length($line);
             $error = 1;
