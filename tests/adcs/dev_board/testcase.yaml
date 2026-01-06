@@ -1,0 +1,4 @@
+tests:
+  adcs.dev_board:
+    platform_allow:
+      - nucleo_g431rb
