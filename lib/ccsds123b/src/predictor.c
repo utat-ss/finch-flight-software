@@ -109,7 +109,6 @@ void predict_image(const vec3 *N, Predictions p)
 						double_res_pred_sample,
 						predicted_sample_value);
 
-
 				/*
 				 * Prediction
 				 */
