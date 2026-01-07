@@ -22,10 +22,14 @@ void decode_encoding(
 				int decoded_j;
 				int decoded_k;
 
-				// Decode the GPO2 string to get the original prediction value 'j'
+				/*
+				 * Decode the GPO2 string to get the original prediction value 'j'
+				 */
 				decode_gpo2(encoding[z][y][x], &decoded_j, &decoded_k);
 
-				// Store the decoded 'j' value into the prediction array
+				/*
+				 * Store the decoded 'j' value into the prediction array
+				 */
 				prediction[z][y][x] = decoded_j;
 			}
 		}
@@ -40,36 +44,50 @@ void decode_gpo2(const char in[32], int *j, int *k)
 		return;
 	}
 
-		// Determine k and prefix based on the structure of the encoded string
-	// The suffix is the initial 'k' bits
-	// The '1' after the suffix marks the end of the suffix and the start of the prefix '0's
-	// The number of '0's after the '1' determines the prefix value
+		/*
+		 * Determine k and prefix based on the structure of the encoded string
+		 */
+	/*
+	 * The suffix is the initial 'k' bits
+	 * The '1' after the suffix marks the end of the suffix and the start of the prefix '0's
+	 * The number of '0's after the '1' determines the prefix value
+	 */
 
 	unsigned int suffix_val = 0;
 	int suffix_len = 0;
 	int index = 0;
 
-	// Read the suffix bits (until '1' is encountered)
+	/*
+	 * Read the suffix bits (until '1' is encountered)
+	 */
 	while (in[index] == '0' || in[index] == '1') {
-		// Check if the current character is '1', which marks the end of suffix bits
+		/*
+		 * Check if the current character is '1', which marks the end of suffix bits
+		 */
 		if (in[index] == '1') {
-			// This '1' is part of the prefix-marker, not the suffix bits.
-			// Suffix bits are inverted in order in the string.
-			// Suffix length is the number of bits before this '1'.
+			/*
+			 * This '1' is part of the prefix-marker, not the suffix bits.
+			 * Suffix bits are inverted in order in the string.
+			 * Suffix length is the number of bits before this '1'.
+			 */
 			suffix_len = index;
 			break;
 		}
 		index++;
 	}
 
-	// Reconstruct the suffix value
+	/*
+	 * Reconstruct the suffix value
+	 */
 	for (int i = 0; i < suffix_len; ++i) {
 		if (in[i] == '1') {
 			suffix_val |= (1 << (suffix_len - 1 - i));
 		}
 	}
 
-	// Move past the '1' marker
+	/*
+	 * Move past the '1' marker
+	 */
 	index++;
 
 	unsigned int prefix_val = 0;
@@ -144,7 +162,9 @@ void reconstruct_prediction(
 			for (int x = 0; x < N->x; ++x, ++t) {
 				int64_t mapped_quantizer_index = image[z][y][x];
 
-				// Step 1: Compute predicted_sample_value (needed for unmapping)
+				/*
+				 * Step 1: Compute predicted_sample_value (needed for unmapping)
+				 */
 				int32_t local_sum = compute_local_sum(z, y, x);
 
 				local_diff[z][y][x] = compute_local_diffs(z, y, x, local_sum);
@@ -154,22 +174,26 @@ void reconstruct_prediction(
 				int64_t double_res_pred_sample = double_resolution_predicted_sample(high_res_pred_sample, z, t);
 				int64_t predicted_sample_value = predicted_sample(double_res_pred_sample);
 
-				// Step 2: Reverse compute_mapped_quantizer_index to get quantizer_index
+				/*
+				 * Step 2: Reverse compute_mapped_quantizer_index to get quantizer_index
+				 */
 				int64_t theta = fmin(predicted_sample_value - Smin, Smax - predicted_sample_value);
 				int64_t quantizer_index;
 
 				if (mapped_quantizer_index > 2 * theta) {
-					quantizer_index = mapped_quantizer_index - theta; // Case: abs(quantizer_index) > theta
+					quantizer_index = mapped_quantizer_index - theta; /* Case: abs(quantizer_index) > theta */
 				} else {
 					int64_t is_even = mapped_quantizer_index % 2 == 0;
 					int64_t abs_q = is_even ? mapped_quantizer_index / 2 : (mapped_quantizer_index + 1) / 2;
-					int64_t d = double_res_pred_sample % 2; // Parity from double_res_pred_sample
+					int64_t d = double_res_pred_sample % 2; /* Parity from double_res_pred_sample */
 
 					quantizer_index = is_even ? abs_q : -abs_q;
-					quantizer_index *= (d == 0 ? 1 : -1); // Apply sign based on parity
+					quantizer_index *= (d == 0 ? 1 : -1); /* Apply sign based on parity */
 				}
 
-				// Step 3: Reverse compute_quantizer_index to get prediction_residual
+				/*
+				 * Step 3: Reverse compute_quantizer_index to get prediction_residual
+				 */
 				int64_t prediction_residual;
 
 				if (x == 0 && y == 0) {

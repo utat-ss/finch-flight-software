@@ -15,11 +15,11 @@
 
 static void compute_k(int accumulator, int counter, int *k)
 {
-	if (2 * counter > accumulator + (int32_t)(49/128.0 * counter)) {
+	if (2 * counter > accumulator + (int32_t)(49 / 128.0 * counter)) {
 		*k = 0;
 	} else {
 		for (*k = 1; *k <= D - 2; ++(*k)) {
-			if (counter * (1 << *k) > accumulator + (int32_t)(49/128.0 * counter)) {
+			if (counter * (1 << *k) > accumulator + (int32_t)(49 / 128.0 * counter)) {
 				*k -= 1;
 				break;
 			}
@@ -52,7 +52,9 @@ void encode_prediction(const vec3 *N, Predictions prediction, EncoderOut out)
 					}
 				}
 
-				// [5.4.3.2.2] Sample adaptive entropy encoder
+				/*
+				 * [5.4.3.2.2] Sample adaptive entropy encoder
+				 */
 				int32_t j = get_predictions(prediction, z, y, x);
 				int32_t k;
 

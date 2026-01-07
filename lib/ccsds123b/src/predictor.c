@@ -66,13 +66,13 @@ void predict_image(const vec3 *N, Predictions p)
 					int ph = -6 + (int32_t)((t - N->x) / 16) + 10 - Omega;
 
 					weights[t + 1] = update_weight(
-						weights[t + 1],                   // omega_t: current weight
-						ez,                               // e_z_t: prediction error
-						ph,                               // p_t: scaling exponent
-						0,                                // xi_z_i: default to 0
-						get_local_diffs(local_diffs, z, y, x).central, // d_z_i_t1: central local difference
-						-(1 << (Omega + 2)),              // omega_min: -2^(Omega+2)
-						(1 << (Omega + 2)) - 1            // omega_max: 2^(Omega+2) - 1
+						weights[t + 1], /* omega_t: current weight */
+						ez, /* e_z_t: prediction error */
+						ph, /* p_t: scaling exponent */
+						0, /* xi_z_i: default to 0 */
+						get_local_diffs(local_diffs, z, y, x).central, /* d_z_i_t1: central local difference */
+						-(1 << (Omega + 2)), /* omega_min: -2^(Omega+2) */
+						(1 << (Omega + 2)) - 1 /* omega_max: 2^(Omega+2) - 1 */
 					);
 				}
 
@@ -109,7 +109,6 @@ void predict_image(const vec3 *N, Predictions p)
 						double_res_pred_sample,
 						predicted_sample_value);
 
-
 				/*
 				 * Prediction
 				 */
@@ -140,8 +139,10 @@ int32_t compute_local_sum(int z, int y, int x)
 			return img_get_pxl(z, y, x - 1) + img_get_pxl(z, y - 1, x - 1) +
 				   (2 * img_get_pxl(z, y - 1, x));
 		} else {
-			// The value of local sum at t=0 is undefined since it is not
-			// needed, so we return 0.
+			/*
+			 * The value of local sum at t=0 is undefined since it is not
+			 * needed, so we return 0.
+			 */
 			return 0;
 		}
 
@@ -170,7 +171,9 @@ int32_t compute_local_sum(int z, int y, int x)
 
 LocalDiff compute_local_diffs(int z, int y, int x, int32_t local_sum)
 {
-	// t=0 is not defined.
+	/*
+	 * t=0 is not defined.
+	 */
 	if (x == 0 && y == 0) {
 		return (LocalDiff){ 0, 0, 0, 0 };
 	}
@@ -256,31 +259,43 @@ void initialize_weights(int32_t *weights, int32_t weights_size, int z, int32_t o
 int32_t update_weight(int32_t omega_t, int32_t e_z_t, int32_t p_t, int32_t xi_z_i,
 	int32_t d_z_i_t1, int32_t omega_min, int32_t omega_max)
 {
-	// Step 1: Compute sgn[e_z(t)]
+	/*
+	 * Step 1: Compute sgn[e_z(t)]
+	 */
 	int32_t sign = sgn_pos(e_z_t);
 
-	// Step 2: Compute the exponent -p(t) + xi_z^(i)
+	/*
+	 * Step 2: Compute the exponent -p(t) + xi_z^(i)
+	 */
 	int32_t exponent = -p_t + xi_z_i;
 
-	// Step 3: Compute 2^(-p(t) + xi_z^(i)) * d_z-i(t+1)
-	// Since 2^exponent can be a left or right shift:
+	/*
+	 * Step 3: Compute 2^(-p(t) + xi_z^(i)) * d_z-i(t+1)
+	 * Since 2^exponent can be a left or right shift:
+	 */
 	int32_t scaling_factor;
 
 	if (exponent >= 0) {
-		scaling_factor = d_z_i_t1 << exponent; // 2^exponent * d_z-i(t+1)
+		scaling_factor = d_z_i_t1 << exponent; /* 2^exponent * d_z-i(t+1) */
 	} else {
-		scaling_factor = d_z_i_t1 >> (-exponent); // 2^(-|exponent|) * d_z-i(t+1)
+		scaling_factor = d_z_i_t1 >> (-exponent); /* 2^(-|exponent|) * d_z-i(t+1) */
 	}
 
-	// Step 4: Compute the update term: (1/2) * sgn[e_z(t)] * 2^(-p(t) + xi_z^(i)) * d_z-i(t+1)
-	// 1/2 is a right shift by 1
+	/*
+	 * Step 4: Compute the update term: (1/2) * sgn[e_z(t)] * 2^(-p(t) + xi_z^(i)) * d_z-i(t+1)
+	 * 1/2 is a right shift by 1
+	 */
 	int32_t update_term = (sign * scaling_factor) >> 1;
 
-	// Step 5: Update omega: omega(t) + floor(update_term)
-	// Since we're using integers, the floor is implicit
+	/*
+	 * Step 5: Update omega: omega(t) + floor(update_term)
+	 * Since we're using integers, the floor is implicit
+	 */
 	int32_t new_omega = omega_t + update_term;
 
-	// Step 6: Clip the result to [omega_min, omega_max]
+	/*
+	 * Step 6: Clip the result to [omega_min, omega_max]
+	 */
 	new_omega = clip(new_omega, omega_min, omega_max);
 
 	return new_omega;
@@ -293,8 +308,10 @@ int64_t mod(int64_t M, int64_t n)
 
 int64_t compute_high_res_pred_sample(int32_t pred_cent_local_diff, int32_t local_sum, int32_t Omega, int32_t R, int32_t Smid, int32_t Smax, int32_t Smin)
 {
-	// The calculation shown at 4.7.2 can be represented in this format,
-	//   clip(modR(c1) + c2 + c3, {clip_min, clip_max})
+	/*
+	 * The calculation shown at 4.7.2 can be represented in this format,
+	 *   clip(modR(c1) + c2 + c3, {clip_min, clip_max})
+	 */
 
 	uint64_t const two_R		 = 1ULL << R;
 	uint64_t const two_R_minus_1 = 1ULL << (R - 1);
