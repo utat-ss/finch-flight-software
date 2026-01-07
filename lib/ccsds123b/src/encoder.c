@@ -15,11 +15,11 @@
 
 static void compute_k(int accumulator, int counter, int *k)
 {
-	if (2 * counter > accumulator + (int32_t)(49/128.0 * counter)) {
+	if (2 * counter > accumulator + (int32_t)(49 / 128.0 * counter)) {
 		*k = 0;
 	} else {
 		for (*k = 1; *k <= D - 2; ++(*k)) {
-			if (counter * (1 << *k) > accumulator + (int32_t)(49/128.0 * counter)) {
+			if (counter * (1 << *k) > accumulator + (int32_t)(49 / 128.0 * counter)) {
 				*k -= 1;
 				break;
 			}
