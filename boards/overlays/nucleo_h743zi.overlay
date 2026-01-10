@@ -1,43 +1,5 @@
-&pinctrl {
-    spi_mosi_pa7: spi_mosi_pa7 {
-		pinmux = <STM32_PINMUX('A', 7, AF5)>;
-	};
-
-	spi_miso_pa6: spi_miso_pa6 {
-		pinmux = <STM32_PINMUX('A', 6, AF5)>;
-	};
-
-    spi_sclk_pa5: spi_sclk_pa5 {
-		pinmux = <STM32_PINMUX('A', 5, AF5)>;
-	};
-};
-
 &spi1 {
     status = "okay";
-    pinctrl-0 = <&spi_sclk_pa5 &spi_mosi_pa7 &spi_miso_pa6>;
-    pinctrl-names = "default";
-    cs-gpios = <&gpioe 4 GPIO_ACTIVE_LOW>, <&gpioe 5 GPIO_ACTIVE_LOW>;
-
-    #address-cells = <1>;
-    #size-cells = <0>;
-
-    flash10: flash@0 {
-        reg = <0>;
-        compatible = "jedec,spi-nor";
-        spi-max-frequency = <4000000>;
-        jedec-id = [20 ba 21];
-        size = <134217728>;
-        status = "okay";
-    };
-
-    flash11: flash@1 {
-        reg = <1>;
-        compatible = "jedec,spi-nor";
-        spi-max-frequency = <4000000>;
-        jedec-id = [20 ba 21];
-        size = <134217728>;
-        status = "okay";
-    };
 };
 
 &gpioe {
