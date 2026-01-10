@@ -12,5 +12,6 @@ manifest:
       west-commands: scripts/west-commands.yml
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git
-      revision: 48f7fb0b57f610bf65bab1aa2d1357c3b9722782 # v2.1
+      # not a stable revision; run git blame and git show for justification
+      revision: 65bc556f7bd658d17833d689b3023e4c03c9165e
       path: modules/lib/libcsp
