@@ -14,3 +14,7 @@ manifest:
       url: https://github.com/libcsp/libcsp.git
       revision: 48f7fb0b57f610bf65bab1aa2d1357c3b9722782 # v2.1
       path: modules/lib/libcsp
+    - name: mcuboot
+      url: https://github.com/mcu-tools/mcuboot
+      revision: v2.1.0
+      path: bootloader/mcuboot
