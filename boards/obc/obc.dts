@@ -8,6 +8,7 @@
 
 #include <st/g4/stm32g431Xb.dtsi>
 #include <dt-bindings/pinctrl/stm32-pinctrl.h>
+#include <zephyr/dt-bindings/clock/stm32g4_clock.h>
 
 / {
 	model = "finch,obc";
@@ -18,6 +19,7 @@
 		zephyr,flash = &flash0;
 		zephyr,code-partition = &slot0_partition;
 		zephyr,console = &usart1;
+		zephyr,canbus = &fdcan1;
 	};
 
 	leds: leds {
@@ -82,6 +84,18 @@
 	status = "okay";
 };
 
+&fdcan1 {
+	bitrate = <100000>;
+	sample-point = <875>;
+	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x02000000>,
+			<&rcc STM32_SRC_PLL_Q FDCAN_SEL(1)>;
+
+	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
+
 &pinctrl {
 	usart1_rx_pb6: usart1_rx_pb6 {
 		pinmux = <STM32_PINMUX('B', 6, AF7)>;
@@ -89,5 +103,13 @@
 
 	usart1_tx_pb7: usart1_tx_pb7 {
 		pinmux = <STM32_PINMUX('B', 7, AF7)>;
+	};
+
+	fdcan1_rx_pa11: fdcan1_rx_pa11 {
+		pinmux = <STM32_PINMUX('A', 11, AF9)>;
+	};
+
+	fdcan1_tx_pa12: fdcan1_tx_pa12 {
+		pinmux = <STM32_PINMUX('A', 12, AF9)>;
 	};
 };
