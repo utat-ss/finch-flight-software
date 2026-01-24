@@ -7,7 +7,7 @@ import argparse
 import os
 import sys
 
-import github
+from github import Github, Auth
 
 DNM_LABELS = ["DNM", "DNM (manifest)", "TSC", "Architecture Review", "dev-review"]
 
@@ -28,7 +28,7 @@ def main(argv):
     args = parse_args(argv)
 
     token = os.environ.get('GITHUB_TOKEN', None)
-    gh = github.Github(token)
+    gh = Github(auth=Auth.Token(token))
     repo = gh.get_repo("utat-ss/finch-flight-software")
     pr = repo.get_pull(args.pull_request)
 

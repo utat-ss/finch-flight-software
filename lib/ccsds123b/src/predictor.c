@@ -224,9 +224,12 @@ int32_t compute_pred_cent_local_diff(int32_t z, int32_t y, int32_t x, LocalDiffs
 
 	int32_t local_diff_vec[Cz(z)];
 
-	local_diff_vec[0] = get_local_diffs(local_diffs, z, y, x).north;
-	local_diff_vec[1] = get_local_diffs(local_diffs, z, y, x).west;
-	local_diff_vec[2] = get_local_diffs(local_diffs, z, y, x).northwest;
+	/* call function once and store the result*/
+	LocalDiff diffs = get_local_diffs(local_diffs, z, y, x);
+
+	local_diff_vec[0] = diffs.north;
+	local_diff_vec[1] = diffs.west;
+	local_diff_vec[2] = diffs.northwest;
 
 	for (int i = 1, j = 3; i <= Pz(z); ++i, ++j) {
 		local_diff_vec[j] = get_local_diffs(local_diffs, z - i, y, x).central;

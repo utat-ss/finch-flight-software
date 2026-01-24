@@ -13,14 +13,16 @@
 #include <stdio.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
-
+#include <zephyr/ztest.h>
 
 Predictions prediction;
 EncoderOut encoding;
 
 LOG_MODULE_REGISTER(bench);
 
-int main(void)
+ZTEST_SUITE(benchmark_test, NULL, NULL, NULL, NULL, NULL);
+
+ZTEST(benchmark_test, test_benchmark)
 {
 	LOG_INF("Starting the image compression benchmark.");
 	LOG_INF("N_Z = %d, N_Y = %d, N_X = %d", N_Z, N_Y, N_X);
