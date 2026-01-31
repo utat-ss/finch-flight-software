@@ -14,8 +14,7 @@
 #include <stdbool.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(obc);
-LOG_MODULE_REGISTER(safety, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(safety);
 
 /**
  * @brief Main loop for Safety command sequence

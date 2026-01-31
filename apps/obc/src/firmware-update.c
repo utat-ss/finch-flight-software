@@ -14,8 +14,7 @@
 #include <stdbool.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(obc);
-LOG_MODULE_REGISTER(firmware_update, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(firmware_update);
 
 /**
  * @brief Main loop for Firmware Update command sequence
