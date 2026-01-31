@@ -34,7 +34,7 @@ int firmware_update_command_sequence(void)
 		// Transmit update feedback to RF
 	}
 
-	else if (cmd_pay_available_update())
+	if (cmd_pay_available_update())
 	{
 		cmd_pay_update();
 		// Transmit update feedback to RF
