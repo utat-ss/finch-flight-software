@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2025 Tenstorrent AI ULC
-# Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+# Copyright (c) 2026 Tenstorrent AI ULC
+# Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
 # SPDX-License-Identifier: Apache-2.0
 
 import glob

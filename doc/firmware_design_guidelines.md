@@ -77,7 +77,7 @@ Every source file must begin with a comment block with our copyright, a high lev
 
 ```c
 /*
- * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ * Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
  *
  * SPDX-License-Identifier: Apache-2.0
  *

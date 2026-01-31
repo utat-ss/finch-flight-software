@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+# Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
 # SPDX-License-Identifier: Apache-2.0
 
 use strict;
