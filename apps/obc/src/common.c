@@ -55,7 +55,7 @@ void enter_mode_op(mode_op mode)
 /**
  * @brief Enter specified ADCS control mode
  */
-void cmd_adcs_mode(mode_adcs mode, char* orbit_info, float current_time, char* tle)
+void cmd_adcs_mode(mode_adcs mode, uint8_t* orbit_info, float current_time, uint8_t* tle)
 {
 	switch (mode) {
 		case MODE_ADCS_SAFE:

@@ -29,7 +29,7 @@ int safety_command_sequence(void);
 /**
  * @brief Get error info from RF
  */
-char* cmd_rf_get_error_info(void);
+uint8_t* cmd_rf_get_error_info(void);
 
 /**
  * @brief Get error handler from RF
@@ -39,7 +39,7 @@ safety_command cmd_rf_get_error_handler(void);
 /**
  * @brief Send error info to RF
  */
-int cmd_rf_send_error_info(char* error_info);
+int cmd_rf_send_error_info(uint8_t* error_info);
 
 /**
  * @brief Send error handler command to RF

@@ -24,7 +24,7 @@ int imaging_command_sequence(void)
 {
 	cmd_pay_camera_cool();
 
-	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, NULL, 0.0, NULL); // Placeholder values for orbit_info, current_time and tle
+	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
 	cmd_pay_camera_image();
 	LOG_INF("Image capture complete");

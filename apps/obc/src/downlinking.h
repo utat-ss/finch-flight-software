@@ -35,16 +35,16 @@ downlink_type downlinking_prepare_rf(void);
 /**
  * @brief Get telemetry data for downlinking
  */
-char* downlinking_get_telemetry_data(void);
+uint8_t* downlinking_get_telemetry_data(void);
 
 /**
  * @brief Get image data for downlinking
  */
-char* downlinking_get_image_data(void);
+uint8_t* downlinking_get_image_data(void);
 
 /**
  * @brief Downlink data to RF
  */
-int downlinking_downlink_rf(char* downlink_data);
+int downlinking_downlink_rf(uint8_t* downlink_data);
 
 #endif

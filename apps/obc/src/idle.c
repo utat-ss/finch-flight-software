@@ -30,7 +30,7 @@ int idle_command_sequence(void)
 
 	// Enter schedule based on location
 
-	cmd_adcs_mode(MODE_ADCS_SUN_POINTING, NULL, 0.0, NULL); // Placeholder values for orbit_info, current_time and tle
+	cmd_adcs_mode(MODE_ADCS_SUN_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
 	// RUN BELOW IN PARALLEL
 	

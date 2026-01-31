@@ -22,10 +22,10 @@ LOG_MODULE_REGISTER(downlinking, LOG_LEVEL_INF);
  */
 int downlinking_command_sequence(void)
 {
-	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, NULL, 0.0, NULL); // Placeholder values for orbit_info, current_time and tle
+	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
 	downlink_type dl_type = downlinking_prepare_rf();
-	char* downlink_data;
+	uint8_t* downlink_data;
 
 	if (dl_type == DOWNLINK_TELEMETRY)
 	{
@@ -57,7 +57,7 @@ downlink_type downlinking_prepare_rf(void)
 /**
  * @brief Get telemetry data for downlinking
  */
-char* downlinking_get_telemetry_data(void)
+uint8_t* downlinking_get_telemetry_data(void)
 {
 	// Get telemetry data
 	return NULL;
@@ -66,7 +66,7 @@ char* downlinking_get_telemetry_data(void)
 /**
  * @brief Get image data for downlinking
  */
-char* downlinking_get_image_data(void)
+uint8_t* downlinking_get_image_data(void)
 {
 	// Get image data
 	return NULL;
@@ -75,7 +75,7 @@ char* downlinking_get_image_data(void)
 /**
  * @brief Downlink data to RF
  */
-int downlinking_downlink_rf(char* downlink_data)
+int downlinking_downlink_rf(uint8_t* downlink_data)
 {
 	// Implement downlinking data to RF
 	return 0;
