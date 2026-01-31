@@ -36,7 +36,13 @@ int downlinking_command_sequence(void)
 		downlink_data = downlinking_get_image_data();
 	}
 
-	downlinking_downlink_rf(downlink_data);
+	int ret = downlinking_downlink_rf(downlink_data);
+
+	// Error handling - to be implemented
+	if (ret < 0)
+	{
+		return ret;
+	}
 
 	enter_mode_op(MODE_OP_IDLE);
 
