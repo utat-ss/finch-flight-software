@@ -18,18 +18,6 @@ LOG_MODULE_REGISTER(obc);
 LOG_MODULE_REGISTER(idle, LOG_LEVEL_INF);
 
 /**
- * @brief Main loop
- */
-int main(void)
-{
-	while (1) {
-		LOG_INF("obc");
-		k_msleep(1000);
-	}
-	return 0;
-}
-
-/**
  * @brief Main loop for Idle command sequence
  */
 int idle_command_sequence(void)
