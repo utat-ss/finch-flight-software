@@ -24,7 +24,7 @@ typedef enum idle_command {
 /**
  * @brief Main loop for Idle command sequence
  */
-int idle_command_sequence(void);
+mode_op idle_command_sequence(void);
 
 /**
  * @brief Check RF for incoming command

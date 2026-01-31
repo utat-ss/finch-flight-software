@@ -59,7 +59,7 @@ typedef enum mode_pay {
 /**
  * @brief Enter specified mode of operation
  */
-void enter_mode_op(mode_op mode);
+// void enter_mode_op(mode_op mode);
 
 /**
  * @brief Enter specified ADCS control mode

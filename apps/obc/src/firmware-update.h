@@ -17,7 +17,7 @@
 /**
  * @brief Main loop for Firmware Update command sequence
  */
-int firmware_update_command_sequence(void);
+mode_op firmware_update_command_sequence(void);
 
 /**
  * @brief Polls for available OBC firmware upate

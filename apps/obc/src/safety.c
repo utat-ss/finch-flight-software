@@ -19,36 +19,35 @@ LOG_MODULE_REGISTER(safety);
 /**
  * @brief Main loop for Safety command sequence
  */
-int safety_command_sequence(void)
+mode_op safety_command_sequence(void)
 {
-  cmd_pay_off();
-  cmd_adcs_mode(MODE_ADCS_OFF, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
+	cmd_pay_off();
+	cmd_adcs_mode(MODE_ADCS_OFF, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
-  uint8_t* error_info;
-  safety_command cmd;
+	uint8_t* error_info;
+	safety_command cmd;
 
-  while (1)
-  {
-    // Receive ping
+	while (1)
+	{
+		// Receive ping
 
-    error_info = cmd_rf_get_error_info();
-    cmd_rf_send_error_info(error_info);
+		error_info = cmd_rf_get_error_info();
+		cmd_rf_send_error_info(error_info);
 
-    cmd = cmd_rf_get_error_handler();
-    cmd_rf_execute_error_handler(cmd);
+		cmd = cmd_rf_get_error_handler();
+		cmd_rf_execute_error_handler(cmd);
 
-    // Check if operator commands to exit Safety mode
-    if (cmd_rf_check_exit_safety_mode())
-    {
-      cmd_pay_mode(MODE_PAY_ON);
-      cmd_adcs_mode(MODE_ADCS_SUN_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
+		// Check if operator commands to exit Safety mode
+		if (cmd_rf_check_exit_safety_mode())
+		{
+			cmd_pay_mode(MODE_PAY_ON);
+			cmd_adcs_mode(MODE_ADCS_SUN_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
-      // Send to RF that exiting Safety mode
+			// Send to RF that exiting Safety mode
 
-      enter_mode_op(MODE_OP_IDLE);
-      return 0;
-    }
-  }
+			return MODE_OP_IDLE;
+		}
+	}
 }
 
 /**
@@ -56,8 +55,8 @@ int safety_command_sequence(void)
  */
 uint8_t* cmd_rf_get_error_info(void)
 {
-  // Get error info from RF
-  return NULL;
+	// Get error info from RF
+	return NULL;
 }
 
 /**
@@ -65,8 +64,8 @@ uint8_t* cmd_rf_get_error_info(void)
  */
 safety_command cmd_rf_get_error_handler(void)
 {
-  // Get error handler from RF
-  return NULL;
+	// Get error handler from RF
+	return NULL;
 }
 
 /**
@@ -74,8 +73,8 @@ safety_command cmd_rf_get_error_handler(void)
  */
 int cmd_rf_send_error_info(const uint8_t* error_info)
 {
-  // Send error info to RF
-  return 0;
+	// Send error info to RF
+	return 0;
 }
 
 /**
@@ -83,8 +82,8 @@ int cmd_rf_send_error_info(const uint8_t* error_info)
  */
 int cmd_rf_execute_error_handler(safety_command cmd)
 {
-  // Send error handler command to RF
-  return 0;
+	// Send error handler command to RF
+	return 0;
 }
 
 /**
@@ -92,6 +91,6 @@ int cmd_rf_execute_error_handler(safety_command cmd)
  */
 int cmd_rf_check_exit_safety_mode(void)
 {
-  // Check if operator commands to exit Safety mode
-  return 0;
+	// Check if operator commands to exit Safety mode
+	return 0;
 }

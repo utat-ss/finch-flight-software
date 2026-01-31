@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(imaging);
 /**
  * @brief Main loop for Imaging command sequence
  */
-int imaging_command_sequence(void)
+mode_op imaging_command_sequence(void)
 {
 	cmd_pay_camera_cool();
 
@@ -31,13 +31,14 @@ int imaging_command_sequence(void)
 	// If near ground station
 	if (true) // Placeholder condition
 	{
-		enter_mode_op(MODE_OP_DOWNLINKING);
+		return MODE_OP_DOWNLINKING;
 	}
 
 	else
 	{
 		LOG_INF("Downlink request"); // Log downlink request
-		enter_mode_op(MODE_OP_IDLE);
+
+		return MODE_OP_IDLE;
 	}
 }
 

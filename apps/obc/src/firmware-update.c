@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(firmware_update);
 /**
  * @brief Main loop for Firmware Update command sequence
  */
-int firmware_update_command_sequence(void)
+mode_op firmware_update_command_sequence(void)
 {
 	// RUN BELOW IN PARALLEL
 
@@ -41,9 +41,7 @@ int firmware_update_command_sequence(void)
 
 	// END PARALLEL
 
-	enter_mode_op(MODE_OP_IDLE);
-
-	return 0;
+	return MODE_OP_IDLE;
 }
 
 /**

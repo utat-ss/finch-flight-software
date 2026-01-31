@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(downlinking);
 /**
  * @brief Main loop for Downlinking command sequence
  */
-int downlinking_command_sequence(void)
+mode_op downlinking_command_sequence(void)
 {
 	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
@@ -44,9 +44,7 @@ int downlinking_command_sequence(void)
 		return ret;
 	}
 
-	enter_mode_op(MODE_OP_IDLE);
-
-	return 0;
+	return MODE_OP_IDLE;
 }
 
 /**

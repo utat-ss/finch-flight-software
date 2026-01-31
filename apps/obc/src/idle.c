@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(idle);
 /**
  * @brief Main loop for Idle command sequence
  */
-int idle_command_sequence(void)
+mode_op idle_command_sequence(void)
 {
 	idle_command rf_command;
 	mode_op rf_mode_change;
@@ -65,7 +65,7 @@ int idle_command_sequence(void)
 
 		else if (scheduled_mode != NULL)
 		{
-			enter_mode_op(scheduled_mode);
+			return scheduled_mode;
 		}
 	}
 

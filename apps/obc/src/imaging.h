@@ -17,7 +17,7 @@
 /**
  * @brief Main loop for Imaging command sequence
  */
-int imaging_command_sequence(void);
+mode_op imaging_command_sequence(void);
 
 /**
  * @brief Execute camera cooling

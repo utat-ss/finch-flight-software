@@ -24,7 +24,7 @@ typedef enum safety_command {
 /**
  * @brief Main loop for Safety command sequence
  */
-int safety_command_sequence(void);
+mode_op safety_command_sequence(void);
 
 /**
  * @brief Get error info from RF

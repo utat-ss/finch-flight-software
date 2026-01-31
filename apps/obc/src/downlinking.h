@@ -25,7 +25,7 @@ typedef enum downlink_type {
 /**
  * @brief Main loop for Downlinking command sequence
  */
-int downlinking_command_sequence(void);
+mode_op downlinking_command_sequence(void);
 
 /**
  * @brief Prepare RF for downlinking

@@ -16,43 +16,6 @@
 LOG_MODULE_REGISTER(finch_common);
 
 /**
- * @brief Enter specified mode of operation
- */
-void enter_mode_op(mode_op mode)
-{
-	switch (mode) {
-		case MODE_OP_IDLE:
-			LOG_INF("Entering Idle mode");
-			// Add implementation for entering Idle mode
-			break;
-
-		case MODE_OP_IMAGING:
-			LOG_INF("Entering Imaging mode");
-			// Add implementation for entering Imaging mode
-			break;
-
-		case MODE_OP_DOWNLINKING:
-			LOG_INF("Entering Downlinking mode");
-			// Add implementation for entering Downlinking mode
-			break;
-
-		case MODE_OP_SAFETY:
-			LOG_INF("Entering Safety mode");
-			// Add implementation for entering Safety mode
-			break;
-
-		case MODE_OP_FIRMWARE_UPDATE:
-			LOG_INF("Entering Firmware Update mode");
-			// Add implementation for entering Firmware Update mode
-			break;
-
-		default:
-			LOG_WRN("Unknown mode of operation");
-			break;
-	}
-}
-
-/**
  * @brief Enter specified ADCS control mode
  */
 void cmd_adcs_mode(mode_adcs mode, uint8_t* orbit_info, float current_time, uint8_t* tle)
