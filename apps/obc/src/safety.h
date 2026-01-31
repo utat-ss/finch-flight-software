@@ -39,7 +39,7 @@ safety_command cmd_rf_get_error_handler(void);
 /**
  * @brief Send error info to RF
  */
-int cmd_rf_send_error_info(uint8_t* error_info);
+int cmd_rf_send_error_info(const uint8_t* error_info);
 
 /**
  * @brief Send error handler command to RF

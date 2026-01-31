@@ -75,7 +75,7 @@ uint8_t* downlinking_get_image_data(void)
 /**
  * @brief Downlink data to RF
  */
-int downlinking_downlink_rf(uint8_t* downlink_data)
+int downlinking_downlink_rf(const uint8_t* downlink_data)
 {
 	// Implement downlinking data to RF
 	return 0;
