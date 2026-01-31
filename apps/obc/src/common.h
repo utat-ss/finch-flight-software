@@ -9,8 +9,8 @@
  * @brief Header for Definitions Common Across Modules 
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef FINCH_COMMON_H
+#define FINCH_COMMON_H
 
 /**
  * @brief System modules

@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(common);
+LOG_MODULE_REGISTER(finch_common);
 
 /**
  * @brief Enter specified mode of operation
