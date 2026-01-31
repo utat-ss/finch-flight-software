@@ -30,21 +30,21 @@ int downlinking_command_sequence(void);
 /**
  * @brief Prepare RF for downlinking
  */
-downlink_type cmd_rf_prepare_downlink(void);
+downlink_type downlinking_prepare_rf(void);
 
 /**
  * @brief Get telemetry data for downlinking
  */
-char* cmd_get_telemetry_data(void);
+char* downlinking_get_telemetry_data(void);
 
 /**
  * @brief Get image data for downlinking
  */
-char* cmd_get_image_data(void);
+char* downlinking_get_image_data(void);
 
 /**
  * @brief Downlink data to RF
  */
-int cmd_rf_downlink_data(char* downlink_data);
+int downlinking_downlink_rf(char* downlink_data);
 
 #endif
