@@ -90,6 +90,7 @@ Well-written commit messages are important for project history and tools like `g
 which help contributors and maintainers understand the origin and reasoning behind specific changes.
 Also, note that each line must not exceed 72 characters unless they contain URLs, and the Git author
 name and email address must match those used in the DCO signoff.
+To append the DCO signoff to your commit message automatically, you can use `git commit -s` or `git commit --signoff`.
 
 Note that `[area]` identifies the area of the code being changed. You can use multiple areas to better describe the context.
 If you’re not sure what to use, try running git log `FILE`, where `FILE` is a file you are changing, and using previous commits that changed the same file as inspiration.
