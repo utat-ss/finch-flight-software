@@ -16,6 +16,44 @@
 
 LOG_MODULE_REGISTER(idle);
 
+idle_ret_t adcs_command(void)
+{
+
+}
+
+idle_ret_t handling_incoming(void)
+{
+
+}
+
+/**
+ * @brief Execute specified command
+ */
+idle_ret_t execute_command(command_t cmd)
+{
+	// Execute specified command
+	idle_ret_t (*fname)(void) = cmd->fname;
+	return fname();
+}
+
+mode_op idle_command_sequence(void)
+{
+	idle_ret_t ret;
+	command_t cmd;
+
+	for (int i = 0; i < MAX_SCHEDULE_LENGTH; i++) {
+		cmd = idle_schedule[i];
+
+		if (cmd->mode != MODE_OP_IDLE) {
+			return cmd->mode;
+		}
+
+		ret = execute_command(cmd);
+
+		// error handling
+	}
+}
+
 /**
  * @brief Main loop for Idle command sequence
  */
@@ -126,13 +164,4 @@ mode_op check_scheduled_mode_change(void)
 {
 	// Check if any mode change is scheduled
 	return NULL;
-}
-
-/**
- * @brief Execute specified command
- */
-int execute_command(idle_command cmd)
-{
-	// Execute specified command
-	return 0;
 }
