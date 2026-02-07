@@ -24,7 +24,7 @@ mode_op firmware_update_command_sequence(void)
 	// RUN BELOW IN PARALLEL
 
 	// Parallel block 1
-	cmd_adcs_mode(MODE_ADCS_SUN_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
+	cmd_adcs_mode(MODE_ADCS_FINE_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 
 	// Parallel block 2
 	if (cmd_obc_available_update())
