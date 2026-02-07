@@ -44,6 +44,16 @@ command_t idle_schedule[MAX_SCHEDULE_LENGTH];
 
 
 /**
+ * @brief Execute ADCS command for Idle mode
+ */
+idle_ret_t adcs_command(void);
+
+/**
+ * @brief Handle incoming commands for Idle mode
+ */
+idle_ret_t handle_incoming(void);
+
+/**
  * @brief Main loop for Idle command sequence
  */
 mode_op idle_command_sequence(void);
@@ -81,6 +91,6 @@ mode_op check_scheduled_mode_change(void);
 /**
  * @brief Execute specified command
  */
-idle_ret_t execute_command(command_t cmd)
+idle_ret_t execute_command(command_t cmd);
 
 #endif

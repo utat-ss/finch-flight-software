@@ -16,14 +16,64 @@
 
 LOG_MODULE_REGISTER(idle);
 
+/**
+ * @brief Execute ADCS command for Idle mode
+ */
 idle_ret_t adcs_command(void)
 {
-
+	cmd_adcs_mode(MODE_ADCS_SUN_POINTING, 0, 0.0, 0); // Placeholder values for orbit_info, current_time and tle
 }
 
-idle_ret_t handling_incoming(void)
+/**
+ * @brief Handle incoming commands for Idle mode
+ */
+idle_ret_t handle_incoming(void)
 {
+	idle_command rf_command;
+	mode_op rf_mode_change;
 
+	idle_command scheduled_cmd;
+	mode_op scheduled_mode;
+	
+	// RUN BELOW IN PARALLEL
+	
+	// Parallel block 1
+	rf_command = rf_incoming_command();
+	rf_mode_change = rf_incoming_mode_change();
+
+	// If command from RF
+	if (rf_command != NULL)
+	{
+		schedule_command(rf_command);
+	}
+	
+	// If mode change from RF
+	else if (rf_mode_change != NULL)
+	{
+		schedule_mode_change(rf_mode_change);
+	}
+
+	// Parallel block 2
+
+	while (1)
+	{
+		// Wait for ping
+
+		scheduled_cmd = check_scheduled_command();
+		scheduled_mode = check_scheduled_mode_change();
+
+		if (scheduled_cmd != NULL)
+		{
+			execute_command(scheduled_cmd);
+		}
+
+		else if (scheduled_mode != NULL)
+		{
+			return scheduled_mode;
+		}
+	}
+
+	// END PARALLEL
 }
 
 /**
@@ -36,6 +86,9 @@ idle_ret_t execute_command(command_t cmd)
 	return fname();
 }
 
+/**
+ * @brief Main loop for Idle command sequence
+ */
 mode_op idle_command_sequence(void)
 {
 	idle_ret_t ret;
@@ -55,9 +108,9 @@ mode_op idle_command_sequence(void)
 }
 
 /**
- * @brief Main loop for Idle command sequence
+ * @brief Main loop for Idle command sequence (deprecated)
  */
-mode_op idle_command_sequence(void)
+/*mode_op idle_command_sequence(void)
 {
 	idle_command rf_command;
 	mode_op rf_mode_change;
@@ -110,7 +163,7 @@ mode_op idle_command_sequence(void)
 	// END PARALLEL
 
 	return 0;
-}
+}*/
 
 /**
  * @brief Check RF for incoming command
