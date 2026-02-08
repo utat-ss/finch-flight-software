@@ -8,6 +8,7 @@
 
 #include <st/h7/stm32h743Xi.dtsi>
 #include <zephyr/dt-bindings/pinctrl/stm32-pinctrl.h>
+#include <zephyr/dt-bindings/clock/stm32h7_clock.h>
 
 / {
 	model = "finch,pay";
@@ -18,6 +19,7 @@
 		zephyr,flash = &flash0;
 		zephyr,code-partition = &slot0_partition;
 		zephyr,console = &uart4;
+		zephyr,canbus = &fdcan1;
 	};
 
 	leds: leds {
@@ -93,4 +95,25 @@
 	uart4_rx_ph14: uart4_rx_ph14 {
 		pinmux = <STM32_PINMUX('H', 14, AF8)>;
 	};
+
+	fdcan1_rx_pa11: fdcan1_rx_pa11 {
+		pinmux = <STM32_PINMUX('A', 11, AF9)>;
+	};
+
+	fdcan1_tx_pa12: fdcan1_tx_pa12 {
+		pinmux = <STM32_PINMUX('A', 12, AF9)>;
+	};
 };
+
+&fdcan1 {
+	bitrate = <100000>;
+	sample-point = <875>;
+	clocks = <&rcc STM32_CLOCK_BUS_APB1_2 0x00000100>,
+			<&rcc STM32_SRC_HSE FDCAN_SEL(0)>;
+
+	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
+
