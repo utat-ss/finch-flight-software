@@ -29,7 +29,7 @@ def main(argv):
 
     token = os.environ.get('GITHUB_TOKEN', None)
     gh = Github(auth=Auth.Token(token))
-    repo = gh.get_repo("utat-ss/finch-flight-software")
+    repo = gh.get_repo("utat-ss/finch-firmware")
     pr = repo.get_pull(args.pull_request)
 
     for label in pr.get_labels():

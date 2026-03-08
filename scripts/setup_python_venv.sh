@@ -5,7 +5,7 @@
 
 set -e
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-env.sh"
-python3 -m venv "$(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/.venv"
-source "$(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/.venv/bin/activate"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-firmware-env.sh"
+python3 -m venv "$(dirname "${FINCH_FIRMWARE_ROOT}")/.venv"
+source "$(dirname "${FINCH_FIRMWARE_ROOT}")/.venv/bin/activate"
 pip install west

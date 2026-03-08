@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 CONTAINER_NAME=utat-ss-finch-container
-IMAGE_NAME=ghcr.io/utat-ss/finch-flight-software
+IMAGE_NAME=ghcr.io/utat-ss/finch-firmware
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 
 container_exists() {
