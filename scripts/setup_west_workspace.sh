@@ -5,10 +5,10 @@
 
 set -e
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-env.sh"
-source "$(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/.venv/bin/activate"
-cd "${FINCH_FLIGHT_SOFTWARE_ROOT}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-firmware-env.sh"
+source "$(dirname "${FINCH_FIRMWARE_ROOT}")/.venv/bin/activate"
+cd "${FINCH_FIRMWARE_ROOT}"
 west init --local --mf west.yml && west update
 west zephyr-export
 west packages pip --install
-west sdk install --install-dir $(dirname "${FINCH_FLIGHT_SOFTWARE_ROOT}")/zephyr-sdk --toolchains arm-zephyr-eabi
+west sdk install --install-dir $(dirname "${FINCH_FIRMWARE_ROOT}")/zephyr-sdk --toolchains arm-zephyr-eabi

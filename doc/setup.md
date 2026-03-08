@@ -61,8 +61,8 @@ You can clone the repo using SSH or HTTPS.
 
 In the host terminal, open a folder with development projects. Then run:
 ```sh
-git clone git@github.com:utat-ss/finch-flight-software.git
-cd finch-flight-software
+git clone git@github.com:utat-ss/finch-firmware.git
+cd finch-firmware
 ```
 </details>
 
@@ -70,8 +70,8 @@ cd finch-flight-software
 
 In the host terminal, open a folder with development projects. Then run:
 ```sh
-git clone https://github.com/utat-ss/finch-flight-software.git
-cd finch-flight-software
+git clone https://github.com/utat-ss/finch-firmware.git
+cd finch-firmware
 ```
 
 </details>
@@ -126,7 +126,7 @@ ___________
 
 In the host terminal, run:
 ```sh
-docker pull ghcr.io/utat-ss/finch-flight-software:latest
+docker pull ghcr.io/utat-ss/finch-firmware:latest
 ```
 
 This command pulls the container with our development environment. It might take a few minutes to finish.
@@ -152,7 +152,7 @@ If you're using Linux, you can proceed with the next step.
 
 ### 1. Open the container
 
-In the host terminal, open the `finch-flight-software` folder. Then, run the `container_open` script:
+In the host terminal, open the `finch-firmware` folder. Then, run the `container_open` script:
 
 __________
 
@@ -199,7 +199,7 @@ The build artifact is in the `/build` directory of the container.
 
 #### 3.1. Run the GDB server on host
 
-Keep the terminal with the Docker container open. Open another terminal on the host. Open the `finch-flight-software` folder, and run the server script:
+Keep the terminal with the Docker container open. Open another terminal on the host. Open the `finch-firmware` folder, and run the server script:
 
 ___________
 

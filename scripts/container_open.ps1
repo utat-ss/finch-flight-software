@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 $ContainerName = "utat-ss-finch-container"
-$ImageName = "ghcr.io/utat-ss/finch-flight-software"
+$ImageName = "ghcr.io/utat-ss/finch-firmware"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 function ContainerExists {

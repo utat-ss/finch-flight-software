@@ -22,15 +22,15 @@ cd ~/finch
 Using **HTTPS**:
 
 ```sh
-git clone https://github.com/utat-ss/finch-flight-software.git
-cd finch-flight-software
+git clone https://github.com/utat-ss/finch-firmware.git
+cd finch-firmware
 ```
 
 Or using **SSH**:
 
 ```sh
-git clone git@github.com:utat-ss/finch-flight-software.git
-cd finch-flight-software
+git clone git@github.com:utat-ss/finch-firmware.git
+cd finch-firmware
 ```
 
 #### 4. Install Dependencies

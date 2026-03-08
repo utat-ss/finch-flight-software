@@ -5,9 +5,9 @@
 
 set -e
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-env.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-firmware-env.sh"
 
-files=$(find "${FINCH_FLIGHT_SOFTWARE_ROOT}" -type f \
+files=$(find "${FINCH_FIRMWARE_ROOT}" -type f \
     \( -name "*.[ch]" -o -name "*.dts" -o -name "*.dtsi" -o -name "*.overlay" \) ! -path "*/build/*")
 
 echo "Found the following files to be checked:"
@@ -22,8 +22,8 @@ exit_code=0
 
 for i in $files; do
     echo "Running checkpatch on $i"
-    chmod +x "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl"
-    perl "${FINCH_FLIGHT_SOFTWARE_ROOT}/scripts/checkpatch.pl" --mailback --no-tree -f --emacs --summary-file --show-types \
+    chmod +x "${FINCH_FIRMWARE_ROOT}/scripts/checkpatch.pl"
+    perl "${FINCH_FIRMWARE_ROOT}/scripts/checkpatch.pl" --mailback --no-tree -f --emacs --summary-file --show-types \
          --ignore BRACES,PRINTK_WITHOUT_KERN_LEVEL,SPLIT_STRING,SPDX_LICENSE_TAG,UNNECESSARY_ELSE,NEW_TYPEDEFS --max-line-length=100 "$i"
     ret=$?
     if [ $ret -ne 0 ]; then

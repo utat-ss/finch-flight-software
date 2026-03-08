@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /workspace
 COPY scripts /workspace/scripts
-COPY finch-flight-software-env.sh /workspace/finch-flight-software-env.sh
+COPY finch-firmware-env.sh /workspace/finch-firmware-env.sh
 COPY west.yml /workspace/west.yml
 
 RUN /workspace/scripts/install_dependencies.sh
@@ -30,7 +30,7 @@ RUN source /.venv/bin/activate && west config build.dir-fmt "/build"
 RUN cat <<EOF > /env-setup.sh
 	source /.venv/bin/activate && \
 	source /zephyr/zephyr-env.sh && \
-	source /workspace/finch-flight-software-env.sh
+	source /workspace/finch-firmware-env.sh
 EOF
 
 RUN chmod +x /env-setup.sh

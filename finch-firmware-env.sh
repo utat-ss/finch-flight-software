@@ -10,5 +10,5 @@ else
     return 1
 fi
 
-export FINCH_FLIGHT_SOFTWARE_ROOT="$(cd "$(dirname "$_script_path")" && pwd)"
-echo "FINCH_FLIGHT_SOFTWARE_ROOT set to $FINCH_FLIGHT_SOFTWARE_ROOT"
+export FINCH_FIRMWARE_ROOT="$(cd "$(dirname "$_script_path")" && pwd)"
+echo "FINCH_FIRMWARE_ROOT set to $FINCH_FIRMWARE_ROOT"

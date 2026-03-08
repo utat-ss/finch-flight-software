@@ -27,14 +27,14 @@ jobs:
           - name: obc-nucleo
             board: nucleo_g431rb
             path: ./apps/obc
-            overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
+            overlay: ${FINCH_FIRMWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
           - name: pay-finch
             board: pay
             path: ./apps/pay
           - name: pay-nucleo
             board: nucleo_h743zi
             path: ./apps/pay
-            overlay: ${FINCH_FLIGHT_SOFTWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
+            overlay: ${FINCH_FIRMWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
 
     steps:
       - name: Checkout repository
@@ -64,7 +64,7 @@ jobs:
           set -e
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
-          source finch-flight-software-env.sh
+          source finch-firmware-env.sh
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Running on PR — checking all commits..."

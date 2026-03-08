@@ -48,6 +48,6 @@ jobs:
           set -e
           source ../.venv/bin/activate
           source ../zephyr/zephyr-env.sh
-          source finch-flight-software-env.sh
+          source finch-firmware-env.sh
 
           ../zephyr/scripts/twister -T tests --build-only -vvv

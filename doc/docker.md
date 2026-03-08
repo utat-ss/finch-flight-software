@@ -6,7 +6,7 @@ The Docker container has a minimal Ubuntu 24.04 installation under the hood. It'
 |----|-----------|
 |`/build`|Folder with build artifacts|
 |`/west.yml`|Config file used by west commands|
-|`/workspace`|Mounted finch-flight-software project folder|
+|`/workspace`|Mounted finch-firmware project folder|
 |`/zephyr`|Zephyr Installation|
 |`/zephyr-sdk`|Zephyr SDK Installation|
 |`/env-setup.sh`|Activates Zephyr environment and Python venv|
@@ -28,6 +28,6 @@ Run the following commands from the host terminal:
 
 1. `docker container stop utat-ss-finch-container`
 2. `docker container rm utat-ss-finch-container`
-3. `docker image rm ghcr.io/utat-ss/finch-flight-software`
-4. `docker pull ghcr.io/utat-ss/finch-flight-software:latest`
+3. `docker image rm ghcr.io/utat-ss/finch-firmware`
+4. `docker pull ghcr.io/utat-ss/finch-firmware:latest`
 5. `./scripts/open_container.sh` or `.\scripts\open_container.ps1`

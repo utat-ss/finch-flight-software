@@ -5,10 +5,10 @@
 
 set -e
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-flight-software-env.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../finch-firmware-env.sh"
 
 cppcheck --enable=all \
     --suppress=missingIncludeSystem \
-    -i"${FINCH_FLIGHT_SOFTWARE_ROOT}/build" \
+    -i"${FINCH_FIRMWARE_ROOT}/build" \
     --error-exitcode=1 \
-    "${FINCH_FLIGHT_SOFTWARE_ROOT}"
+    "${FINCH_FIRMWARE_ROOT}"
