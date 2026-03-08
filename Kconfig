@@ -1,4 +1,29 @@
 # Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
 # SPDX-License-Identifier: Apache-2.0
 
+menu "FINCH Firmware"
+
+config FINCH_DEVELOPMENT
+	bool "Enable development build features"
+	help
+	  Enables non-flight development features.
+
+if FINCH_DEVELOPMENT
+
+config LOG
+	default y
+
+config LOG_DEFAULT_LEVEL
+	default 3
+
+config CONSOLE
+	default y
+
+config UART_CONSOLE
+	default y
+
+endif
+
 rsource "lib/Kconfig"
+
+endmenu

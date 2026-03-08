@@ -21,16 +21,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: obc-obc
+          - name: obc-flight
             board: obc
             path: ./apps/obc
+          - name: obc-development
+            board: obc
+            path: ./apps/obc
+            extra_kconfig: CONFIG_FINCH_DEVELOPMENT=y
           - name: obc-nucleo
             board: nucleo_g431rb
             path: ./apps/obc
             overlay: ${FINCH_FIRMWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
-          - name: pay-finch
+          - name: pay-flight
             board: pay
             path: ./apps/pay
+          - name: pay-development
+            board: pay
+            path: ./apps/pay
+            extra_kconfig: CONFIG_FINCH_DEVELOPMENT=y
           - name: pay-nucleo
             board: nucleo_h743zi
             path: ./apps/pay
@@ -76,11 +84,6 @@ jobs:
 
           echo "Commit list: $commits"
 
-          EXTRA_ARGS=""
-          if [ -f "${{ matrix.overlay }}" ]; then
-            EXTRA_ARGS+="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
-          fi
-
           failed_commits=""
 
           for commit in $commits; do
@@ -88,6 +91,16 @@ jobs:
 
             git checkout $commit
             rm -rf build/
+            EXTRA_ARGS=""
+            if [ -f "${{ matrix.overlay }}" ]; then
+              EXTRA_ARGS+="-- -DDTC_OVERLAY_FILE=${{ matrix.overlay }}"
+            fi
+            if [ -n "${{ matrix.extra_kconfig }}" ]; then
+              if [ -z "$EXTRA_ARGS" ]; then
+                EXTRA_ARGS+="--"
+              fi
+              EXTRA_ARGS+=" -D${{ matrix.extra_kconfig }}"
+            fi
             set +e
             west -v build -b ${{ matrix.board }} ${{ matrix.path }} -p $EXTRA_ARGS
             build_status=$?
@@ -101,7 +114,7 @@ jobs:
             fi
           done
 
-          echo "Board: ${{ matrix.board }}, path: ${{ matrix.path }}."
+          echo "Build: ${{ matrix.name }}, board: ${{ matrix.board }}, path: ${{ matrix.path }}."
           if [ -z "$failed_commits" ]; then
             echo "All commits are built successfully."
             exit 0
