@@ -2,7 +2,7 @@
 
 ## Developer Certificate of Origin (DCO)
 
-All contributions to The FINCH CubeSat Project Flight Software require agreement to
+All contributions to FINCH Firmware require agreement to
 the Developer Certificate of Origin (DCO).
 The full text of the DCO is provided below and can also be found at
 https://developercertificate.org:
