@@ -1,0 +1,10 @@
+# Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
+# SPDX-License-Identifier: Apache-2.0
+source "Kconfig.zephyr"
+
+config CAN_MODE_LOOPBACK
+	bool "Enable CAN hardware loopback mode"
+	default n
+	help
+	  Sets the CAN controller into loopback mode for debugging.
+	  Frames are echoed back without needing physical bus connections.
