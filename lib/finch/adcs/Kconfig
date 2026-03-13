@@ -1,0 +1,7 @@
+# Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+config FINCH_ADCS
+	bool "Support for ADCS 10M"
+	help
+	  This option enables the ADCS communication library.
