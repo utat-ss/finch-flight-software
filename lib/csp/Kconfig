@@ -1,0 +1,50 @@
+# Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+config FINCH_CSP
+	bool "Enable FINCH CSP integration"
+	select LIBCSP
+	help
+	  Build the FINCH libcsp integration layer.
+
+if FINCH_CSP
+
+config FINCH_CSP_NODE_ADDRESS
+	int "CSP node address"
+	range 0 16382
+	default 1
+	help
+	  CSP address used for this image.
+	  16383 is reserved as the CSP broadcast address.
+
+config FINCH_CSP_HOSTNAME
+	string "CSP hostname"
+	default "finch"
+	help
+	  Hostname exposed via CSP management services.
+
+config FINCH_CSP_MODEL
+	string "CSP model"
+	default "finch-flight-software"
+	help
+	  Model string exposed via CSP management services.
+
+config FINCH_CSP_REVISION
+	string "CSP revision"
+	default "dev"
+	help
+	  Revision string exposed via CSP management services.
+
+config FINCH_CSP_ROUTER_STACK_SIZE
+	int "CSP router thread stack size"
+	default 1024
+	help
+	  Stack size for the CSP router thread.
+
+config FINCH_CSP_ROUTER_PRIORITY
+	int "CSP router thread priority"
+	default 0
+	help
+	  Zephyr thread priority for the CSP router thread.
+
+endif # FINCH_CSP
