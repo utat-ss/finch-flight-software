@@ -135,11 +135,8 @@ static int flash_wait_ready(const struct device *spi, const struct device *gpio)
     return -ETIMEDOUT;
 }
 
-int write_test(const struct device *spi, const struct device *gpio) {
-    LOG_INF("SPI Flash write test");
-
+int write(const struct device *spi, const struct device *gpio, const uint8_t *data) {
     const uint32_t addr = FLASH_TEST_ADDR;
-    const uint8_t expected[4] = {0xDE, 0xAD, 0xBE, 0xEF};
     const uint8_t wren = FLASH_CMD_WRENB;
 
     uint8_t erase_cmd[5] = {
@@ -174,10 +171,10 @@ int write_test(const struct device *spi, const struct device *gpio) {
         (uint8_t)(addr >> 16),
         (uint8_t)(addr >> 8),
         (uint8_t)addr,
-        expected[0],
-        expected[1],
-        expected[2],
-        expected[3],
+        data[0],
+        data[1],
+        data[2],
+        data[3],
     };
 
     ret = flash_xfer(spi, gpio, &wren, NULL, 1);
@@ -198,7 +195,13 @@ int write_test(const struct device *spi, const struct device *gpio) {
         return ret;
     }
 
-    uint8_t read_tx[9] = {
+    return 0;
+}
+
+int read(const struct device *spi, const struct device *gpio, uint8_t *result) {
+    const uint32_t addr = FLASH_TEST_ADDR;
+
+    uint8_t read_cmd[9] = {
         FLASH_CMD_READ_4B,
         (uint8_t)(addr >> 24),
         (uint8_t)(addr >> 16),
@@ -211,23 +214,47 @@ int write_test(const struct device *spi, const struct device *gpio) {
     };
     uint8_t read_rx[9] = {0};
 
-    ret = flash_xfer(spi, gpio, read_tx, read_rx, sizeof(read_tx));
+    int ret = flash_xfer(spi, gpio, read_cmd, read_rx, sizeof(read_cmd));
     if (ret != 0) {
         LOG_ERR("Readback command failed (ret=%d)", ret);
         return ret;
     }
 
-    uint8_t actual[4] = {read_rx[5], read_rx[6], read_rx[7], read_rx[8]};
-    LOG_INF("Read back: %02X %02X %02X %02X", actual[0], actual[1], actual[2], actual[3]);
+    result[0] = read_rx[5];
+    result[1] = read_rx[6];
+    result[2] = read_rx[7];
+    result[3] = read_rx[8];
+    LOG_INF("Read back: %02X %02X %02X %02X", result[0], result[1], result[2], result[3]);
+
+    return 0;
+}
+
+int write_test(const struct device *spi, const struct device *gpio) {
+    LOG_INF("SPI Flash write test");
+    
+    const uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+
+    int ret = write(spi, gpio, data);
+    if (ret != 0) {
+        LOG_ERR("Write failed (ret=%d)", ret);
+        return ret;
+    }
+
+    uint8_t read_data[4] = {0};
+    ret = read(spi, gpio, read_data);
+    if (ret != 0) {
+        LOG_ERR("Read failed (ret=%d)", ret);
+        return ret;
+    }
 
     for (int i = 0; i < 4; i++) {
-        if (actual[i] != expected[i]) {
-            LOG_ERR("Data mismatch at index %d: expected %02X, got %02X", i, expected[i], actual[i]);
+        if (read_data[i] != data[i]) {
+            LOG_ERR("Data mismatch at index %d: expected %02X, got %02X", i, data[i], read_data[i]);
             return -EIO;
         }
     }
 
-    LOG_INF("Successfully programmed 0xDEADBEEF at 0x%08X", addr);
+    LOG_INF("Successfully programmed");
     return 0;
 }
 
@@ -289,42 +316,59 @@ int main(void)
     const struct device *spi = DEVICE_DT_GET(SPI_NODE);
     const struct device *gpio = DEVICE_DT_GET(CS_GPIO_NODE);
 
-    while (1) {
-        /* Configure CS pin */
-        int ret = gpio_pin_configure(gpio, CS_PIN, GPIO_OUTPUT_HIGH);
-        if (ret != 0) {
-            LOG_ERR("ERROR configuring the CS Pin (ret=%d)", ret);
-            return ret;
-        }
-
-        LOG_INF("Configured the CS Pin");
-        LOG_INF("Setting the CS_PIN to low");
-
-        /* Assert CS */
-        ret = gpio_pin_set(gpio, CS_PIN, 0);
-        if (ret != 0) {
-            LOG_ERR("ERROR setting the CS pin low (ret=%d)", ret);
-            return ret;
-        }
-
-        ret = print_id(spi, gpio);
-        
-        if (ret != 0) {
-            LOG_ERR("ERROR configuring the CS Pin (ret=%d)", ret);
-            return ret;
-        }
-
-        ret = write_test(spi, gpio);
-        if (ret != 0) {
-            LOG_ERR("SPI Flash write test failed (ret=%d)", ret);
-        } else {
-            LOG_INF("SPI Flash write test successful");
-        }
-
-        LOG_INF("Setting CS pin high in %d ms", WAIT_MS);
-        k_msleep(WAIT_MS);
-
-        /* Deassert CS */
-        gpio_pin_set(gpio, CS_PIN, 1);
+    /* Configure CS pin */
+    int ret = gpio_pin_configure(gpio, CS_PIN, GPIO_OUTPUT_HIGH);
+    if (ret != 0) {
+        LOG_ERR("ERROR configuring the CS Pin (ret=%d)", ret);
+        return ret;
     }
+
+    LOG_INF("Configured the CS Pin");
+    LOG_INF("Setting the CS_PIN to low");
+
+    /* Assert CS */
+    ret = gpio_pin_set(gpio, CS_PIN, 0);
+    if (ret != 0) {
+        LOG_ERR("ERROR setting the CS pin low (ret=%d)", ret);
+        return ret;
+    }
+
+    ret = print_id(spi, gpio);
+    
+    if (ret != 0) {
+        LOG_ERR("ERROR configuring the CS Pin (ret=%d)", ret);
+        return ret;
+    }
+
+    ret = write_test(spi, gpio);
+    if (ret != 0) {
+        LOG_ERR("SPI Flash write test failed (ret=%d)", ret);
+    } else {
+        LOG_INF("SPI Flash write test successful");
+    }
+
+    // Write
+    // uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    // ret = write(spi, gpio, data);
+
+    // if (ret != 0) {
+    //     LOG_ERR("SPI Flash write failed (ret=%d)", ret);
+    // } else {
+    //     LOG_INF("SPI Flash write successful");
+    // }
+
+    // Read
+    // uint8_t read_data[4] = {0};
+    // ret = read(spi, gpio, read_data);
+    // if (ret != 0) {
+    //     LOG_ERR("SPI Flash read failed (ret=%d)", ret);
+    // } else {
+    //     LOG_INF("SPI Flash read successful: %02X %02X %02X %02X", read_data[0], read_data[1], read_data[2], read_data[3]);
+    // }
+
+    LOG_INF("Setting CS pin high in %d ms", WAIT_MS);
+    k_msleep(WAIT_MS);
+
+    /* Deassert CS */
+    gpio_pin_set(gpio, CS_PIN, 1);
 }
