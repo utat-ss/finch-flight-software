@@ -19,8 +19,8 @@ LOG_MODULE_REGISTER(spi_jedec);
 #define SPI_NODE DT_NODELABEL(spi1)
 
 /* Manual CS GPIO. Controlling CS pin manually. */
-#define CS_GPIO_NODE DT_NODELABEL(gpioe)
-const char *gpio_set = "gpioe"; /* Used in log messages */
+#define CS_GPIO_NODE DT_NODELABEL(gpioa)
+const char *gpio_set = "gpioa"; /* Used in log messages */
 
 #define CS_PIN 4
 #define WAIT_MS 1000
