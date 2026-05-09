@@ -19,10 +19,10 @@ LOG_MODULE_REGISTER(spi_jedec);
 #define SPI_NODE DT_NODELABEL(spi1)
 
 /* Manual CS GPIO. Controlling CS pin manually. */
-#define CS_GPIO_NODE DT_NODELABEL(gpioa)
-const char *gpio_set = "gpioa"; /* Used in log messages */
+#define CS_GPIO_NODE DT_NODELABEL(gpioe)
+const char *gpio_set = "gpioe"; /* Used in log messages */
 
-#define CS_PIN 4
+#define CS_PIN 6
 #define WAIT_MS 1000
 
 #define FLASH_CMD_WRENB 0x06
@@ -234,14 +234,14 @@ int write_test(const struct device *spi, const struct device *gpio) {
     
     const uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
 
-    int ret = write(spi, gpio, data);
-    if (ret != 0) {
-        LOG_ERR("Write failed (ret=%d)", ret);
-        return ret;
-    }
+    //int ret = write(spi, gpio, data);
+    //if (ret != 0) {
+    //    LOG_ERR("Write failed (ret=%d)", ret);
+    //    return ret;
+    //}
 
     uint8_t read_data[4] = {0};
-    ret = read(spi, gpio, read_data);
+    int ret = read(spi, gpio, read_data);
     if (ret != 0) {
         LOG_ERR("Read failed (ret=%d)", ret);
         return ret;
