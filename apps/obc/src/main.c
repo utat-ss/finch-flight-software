@@ -8,12 +8,54 @@
 #include <finch/csp/csp.h>
 
 #include <zephyr/logging/log.h>
+#include <zephyr/types.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/watchdog.h>
 #include <zephyr/kernel.h>
 
 LOG_MODULE_REGISTER(obc);
 
 int main(void)
 {
+	LOG_INF("Board Started");
+
+	/*
+	 *	Get internal watchdog from device tree. watchdog0 holdes the address to iwdg, which defines the device in the device tree
+	 */
+	const struct device *wdt = DEVICE_DT_GET(DT_ALIAS(watchdog0));
+	int wdt_channel_id;
+
+	if (!device_is_ready(wdt)) {
+		LOG_ERR("%s: device is not ready", wdt->name);
+		return 0;
+	}
+
+	struct wdt_timeout_cfg wdt_config = {
+		/* Reset SoC when watchdog downcounter reaches 0. */
+		.flags = WDT_FLAG_RESET_SOC,
+
+		/* Set min and max time window for feeding the timer */
+		.window.min = CONFIG_WDT_MIN_WINDOW,
+		.window.max = CONFIG_WDT_MAX_WINDOW,
+	};
+
+	wdt_channel_id = wdt_install_timeout(wdt, &wdt_config);
+
+	/* Timeout configuration setup */
+
+	if (wdt_channel_id < 0) {
+		LOG_ERR("Internal watchdog install error");
+		return 0;
+	}
+
+	int err = wdt_setup(wdt, CONFIG_WDT_OPT);
+
+	if (err < 0) {
+		LOG_ERR("Internal watchdog setup error");
+		return 0;
+	}
+
 	int rc;
 	adcs_rc_t adcs_rc;
 
@@ -39,7 +81,18 @@ int main(void)
 			adcs_id[6], adcs_id[7], adcs_id[8], adcs_id[9], adcs_id[10], adcs_id[11]);
 
 	while (1) {
-		k_msleep(1000);
+
+		/*
+		 *	Main loop runs here. If it hangs, feeding will not run
+		 */
+
+		int ret = wdt_feed(wdt, wdt_channel_id);
+
+		if (ret < 0) {
+			LOG_ERR("Failed to feed the watchdog");
+			return 0;
+		}
+		k_msleep(CONFIG_WDT_CHECK_INTERVAL);
 	}
 
 	return 0;
