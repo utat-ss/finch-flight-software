@@ -39,6 +39,7 @@
 		actled = &act_led;
 		led1 = &wrn_led;
 		wrnled = &wrn_led;
+		watchdog0 = &iwdg;
 
 		adcs-uart = &usart2;
 	};
@@ -131,4 +132,8 @@
 	fdcan1_tx_pa12: fdcan1_tx_pa12 {
 		pinmux = <STM32_PINMUX('A', 12, AF9)>;
 	};
+};
+
+&iwdg {
+	status = "okay";
 };
