@@ -3,3 +3,19 @@
 
 config BOARD_OBC
         select SOC_STM32G431XX
+
+config WDT_MAX_WINDOW
+        int "Maximum watchdog window"
+        default 1000
+
+config WDT_MIN_WINDOW
+        int "Minimum watchdog window"
+        default 0
+
+config WDT_OPT
+        int "Watchdog configuration options"
+        default 0
+
+config WDT_CHECK_INTERVAL
+        int "Watchdog check interval"
+        default 100
