@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(spi_jedec);
 #define CS_GPIO_NODE DT_NODELABEL(gpioe)
 const char *gpio_set = "gpioe"; /* Used in log messages */
 
-#define CS_PIN 6
+#define CS_PIN 5
 #define WAIT_MS 1000
 
 #define FLASH_CMD_WRENB 0x06
@@ -32,8 +32,12 @@ const char *gpio_set = "gpioe"; /* Used in log messages */
 #define FLASH_CMD_PRPGE_4B 0x12
 #define FLASH_CMD_READ_4B 0x13
 
-#define FLASH_TEST_ADDR 0x00040000U
+#define FLASH_TEST_ADDR 0x00000100U
+
+
 #define FLASH_POLL_TIMEOUT_MS 10000
+
+#define NUM_BYTES 4
 
 static const struct spi_config spi_cfg = {
     .frequency = 1875000, /* 1 MHz */
@@ -135,8 +139,10 @@ static int flash_wait_ready(const struct device *spi, const struct device *gpio)
     return -ETIMEDOUT;
 }
 
-int write(const struct device *spi, const struct device *gpio, const uint8_t *data) {
-    const uint32_t addr = FLASH_TEST_ADDR;
+uint8_t program_cmd[NUM_BYTES + 5];
+
+int write(const struct device *spi, const struct device *gpio, const uint8_t *data, uint32_t addr) {
+
     const uint8_t wren = FLASH_CMD_WRENB;
 
     uint8_t erase_cmd[5] = {
@@ -165,17 +171,16 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
         return ret;
     }
 
-    uint8_t program_cmd[9] = {
-        FLASH_CMD_PRPGE_4B,
-        (uint8_t)(addr >> 24),
-        (uint8_t)(addr >> 16),
-        (uint8_t)(addr >> 8),
-        (uint8_t)addr,
-        data[0],
-        data[1],
-        data[2],
-        data[3],
-    };
+    program_cmd[0] = FLASH_CMD_PRPGE_4B;
+    program_cmd[1] = (uint8_t)(addr >> 24);
+    program_cmd[2] = (uint8_t)(addr >> 16);
+    program_cmd[3] = (uint8_t)(addr >> 8);
+    program_cmd[4] = (uint8_t)addr;
+    
+
+    for (int i = 0; i < NUM_BYTES; i++) {
+        program_cmd[5+i] = data[i];
+    }
 
     ret = flash_xfer(spi, gpio, &wren, NULL, 1);
     if (ret != 0) {
@@ -198,21 +203,24 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
     return 0;
 }
 
-int read(const struct device *spi, const struct device *gpio, uint8_t *result) {
-    const uint32_t addr = FLASH_TEST_ADDR;
+uint8_t read_rx[NUM_BYTES+5] = {0};
+uint8_t read_cmd[NUM_BYTES+5];
 
-    uint8_t read_cmd[9] = {
-        FLASH_CMD_READ_4B,
-        (uint8_t)(addr >> 24),
-        (uint8_t)(addr >> 16),
-        (uint8_t)(addr >> 8),
-        (uint8_t)addr,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-    };
-    uint8_t read_rx[9] = {0};
+
+
+int read(const struct device *spi, const struct device *gpio, uint8_t *result, uint32_t addr) {
+
+    read_cmd[0] = FLASH_CMD_READ_4B;
+    read_cmd[1] = (uint8_t)(addr >> 24);
+    read_cmd[2] = (uint8_t)(addr >> 16);
+    read_cmd[3] = (uint8_t)(addr >> 8);
+    read_cmd[4] = (uint8_t)addr;
+
+    for (int i = 0; i < NUM_BYTES; i++) {
+        read_cmd[i+5] = 0x00;
+    }
+
+    
 
     int ret = flash_xfer(spi, gpio, read_cmd, read_rx, sizeof(read_cmd));
     if (ret != 0) {
@@ -220,34 +228,90 @@ int read(const struct device *spi, const struct device *gpio, uint8_t *result) {
         return ret;
     }
 
-    result[0] = read_rx[5];
-    result[1] = read_rx[6];
-    result[2] = read_rx[7];
-    result[3] = read_rx[8];
-    LOG_INF("Read back: %02X %02X %02X %02X", result[0], result[1], result[2], result[3]);
+    for (int i = 0; i < NUM_BYTES; i++) {
+        result[i] = read_rx[5+i];
+    }
+
+    LOG_INF("Read back:");
+
+    for (int i = 0; i < NUM_BYTES; i++) {
+        LOG_INF("%02X ", result[i]);
+    }
 
     return 0;
 }
 
+int erase(const struct device *spi, const struct device *gpio) {
+    const uint8_t wren = FLASH_CMD_WRENB;
+
+    uint8_t erase_cmd[1] = {0xC7};
+
+    int ret = flash_xfer(spi, gpio, &wren, NULL, 1);
+    if (ret != 0) {
+        LOG_ERR("WREN before erase failed (ret=%d)", ret);
+        return ret;
+    }
+
+    ret = flash_xfer(spi, gpio, erase_cmd, NULL, sizeof(erase_cmd));
+    if (ret != 0) {
+        LOG_ERR("Sector erase command failed (ret=%d)", ret);
+        return ret;
+    }
+
+    ret = flash_wait_ready(spi, gpio);
+    if (ret != 0) {
+        LOG_ERR("Sector erase did not complete (ret=%d)", ret);
+        return ret;
+    }
+    return 0;
+}
+
+int resume_erase(const struct device *spi, const struct device *gpio) {
+    //const uint8_t wren = FLASH_CMD_WRENB;
+
+    uint8_t erase_cmd[1] = {0x7A};
+
+    int ret = flash_xfer(spi, gpio, erase_cmd, NULL, sizeof(erase_cmd));
+    if (ret != 0) {
+        LOG_ERR("Sector erase command failed (ret=%d)", ret);
+        return ret;
+    }
+
+    ret = flash_wait_ready(spi, gpio);
+    if (ret != 0) {
+        LOG_ERR("Sector erase did not complete (ret=%d)", ret);
+        return ret;
+    }
+    return 0;
+}
+
+uint8_t data[NUM_BYTES];
+
 int write_test(const struct device *spi, const struct device *gpio) {
     LOG_INF("SPI Flash write test");
     
-    const uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
 
-    //int ret = write(spi, gpio, data);
-    //if (ret != 0) {
-    //    LOG_ERR("Write failed (ret=%d)", ret);
-    //    return ret;
-    //}
+    for (uint8_t i = 0; i < NUM_BYTES; i++) {
+        data[i] = 0xEA;
+    }
+    
+    //int ret = resume_erase(spi, gpio);
 
-    uint8_t read_data[4] = {0};
-    int ret = read(spi, gpio, read_data);
+    int ret = write(spi, gpio, data, FLASH_TEST_ADDR);
+    //int ret = 0;
+    if (ret != 0) {
+       LOG_ERR("Write failed (ret=%d)", ret);
+       return ret;
+    }
+
+    uint8_t read_data[NUM_BYTES] = {0};
+    ret = read(spi, gpio, read_data, FLASH_TEST_ADDR);
     if (ret != 0) {
         LOG_ERR("Read failed (ret=%d)", ret);
         return ret;
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NUM_BYTES; i++) {
         if (read_data[i] != data[i]) {
             LOG_ERR("Data mismatch at index %d: expected %02X, got %02X", i, data[i], read_data[i]);
             return -EIO;
