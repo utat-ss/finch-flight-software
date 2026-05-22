@@ -21,10 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: obc-obc
+          - name: obc
             board: obc
             path: ./apps/obc
-          - name: pay-finch
+          - name: pay
             board: pay
             path: ./apps/pay
 
