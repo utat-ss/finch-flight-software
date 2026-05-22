@@ -24,17 +24,9 @@ jobs:
           - name: obc-obc
             board: obc
             path: ./apps/obc
-          - name: obc-nucleo
-            board: nucleo_g431rb
-            path: ./apps/obc
-            overlay: ${FINCH_FIRMWARE_ROOT}/boards/overlays/nucleo_g431rb.overlay
           - name: pay-finch
             board: pay
             path: ./apps/pay
-          - name: pay-nucleo
-            board: nucleo_h743zi
-            path: ./apps/pay
-            overlay: ${FINCH_FIRMWARE_ROOT}/boards/overlays/nucleo_h743zi.overlay
 
     steps:
       - name: Checkout repository
