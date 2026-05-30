@@ -5,13 +5,6 @@
 #include <zephyr/logging/log.h>
 #include <errno.h>
 
-/* Using the default spi1, gpioe configs from STM32. */
-/* The pins used are: &spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pb5 */
-/* CLK  = PA5. On the Nucleo board: CN7,pin 10 */
-/* MISO = PA6.      On the Nucleo board: CN7,pin 12 */
-/* MOSI = PA7.      On the Nucleo board: CN7,pin 14 */
-/* Trying to communicate with 1 flash chip. CS (nCS) pin = PE4. On the Nucleo board: CN9,pin 16*/
-
 /* Register logging module */
 LOG_MODULE_REGISTER(spi_jedec);
 
@@ -72,8 +65,11 @@ static int flash_xfer(const struct device *spi,
         ret = cs_ret;
     }
 
+    k_busy_wait(1);
+
     return ret;
 }
+
 
 static int flash_read_status(const struct device *spi,
                              const struct device *gpio,
@@ -93,10 +89,9 @@ static int flash_read_status(const struct device *spi,
 
 static int flash_wait_ready(const struct device *spi, const struct device *gpio)
 {
-    k_msleep(200); // small delay before polling to allow flash chip to update status register after command
- 
-    return 0;
-    
+    k_msleep(10);
+
+    // FLASH_POLL_TIMEOUT_MS
     for (int elapsed = 0; elapsed < FLASH_POLL_TIMEOUT_MS; elapsed++) {
         uint8_t status = 0;
         int ret = flash_read_status(spi, gpio, &status);
@@ -138,6 +133,7 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
     const uint32_t addr = FLASH_TEST_ADDR;
     const uint8_t wren = FLASH_CMD_WRENB;
 
+    
     // erasing target sector before writing
     uint8_t erase_cmd[4] = {
         FLASH_CMD_SE,
@@ -150,7 +146,6 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
         LOG_ERR("WREN before erase failed (ret=%d)", ret);
         return ret;
     }
-
     ret = flash_xfer(spi, gpio, erase_cmd, NULL, sizeof(erase_cmd));
     if (ret != 0) {
         LOG_ERR("Sector erase command failed (ret=%d)", ret);
@@ -159,7 +154,6 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
 
     // waiting until flash chip ready for next command
     ret = flash_wait_ready(spi, gpio);
-
     if (ret != 0) {
         LOG_ERR("Sector erase did not complete (ret=%d)", ret);
         return ret;
@@ -191,6 +185,7 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
 
     // waiting until flash chip ready for next command
     ret = flash_wait_ready(spi, gpio);
+
     if (ret != 0) {
         LOG_ERR("Page program did not complete (ret=%d)", ret);
         return ret;
@@ -242,6 +237,7 @@ int write_test(const struct device *spi, const struct device *gpio) {
     }
 
     // writing
+
     ret = write(spi, gpio, data);
     if (ret != 0) {
         LOG_ERR("Write failed (ret=%d)", ret);
