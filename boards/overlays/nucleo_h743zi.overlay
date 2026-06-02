@@ -1,0 +1,7 @@
+&spi1 {
+    status = "okay";
+};
+
+&gpioe {
+    status = "okay";
+};
