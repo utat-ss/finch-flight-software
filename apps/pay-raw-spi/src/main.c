@@ -3,7 +3,10 @@
 #include <zephyr/drivers/spi.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
+#include <string.h> /* Required for memcpy, strlen, memcmp */
 #include <errno.h>
+
+#define FLASH_PAGE_SIZE 128
 
 /* Using the default spi1, gpioe configs from STM32. */
 /* The pins used are: &spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pb5 */
@@ -135,10 +138,17 @@ static int flash_wait_ready(const struct device *spi, const struct device *gpio)
     return -ETIMEDOUT;
 }
 
-int write(const struct device *spi, const struct device *gpio, const uint8_t *data) {
-    const uint32_t addr = FLASH_TEST_ADDR;
+/* Updated signature to accept addr and len */
+int write(const struct device *spi, const struct device *gpio, uint32_t addr, const uint8_t *data, size_t len) {
+
+    if (len > FLASH_PAGE_SIZE) {
+        LOG_ERR("Cannot write more than 1 page (%d bytes) at a time!", FLASH_PAGE_SIZE);
+        return -EINVAL;
+    }
+
     const uint8_t wren = FLASH_CMD_WRENB;
 
+    /*1, erase before write*/
     uint8_t erase_cmd[5] = {
         FLASH_CMD_ER256_4B,
         (uint8_t)(addr >> 24),
@@ -165,17 +175,17 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
         return ret;
     }
 
-    uint8_t program_cmd[9] = {
-        FLASH_CMD_PRPGE_4B,
-        (uint8_t)(addr >> 24),
-        (uint8_t)(addr >> 16),
-        (uint8_t)(addr >> 8),
-        (uint8_t)addr,
-        data[0],
-        data[1],
-        data[2],
-        data[3],
-    };
+    /*2, Program Data*/
+    /* Buffer size: 5 bytes for command/address + length of data */
+    uint8_t program_cmd[5 + FLASH_PAGE_SIZE]; 
+    program_cmd[0] = FLASH_CMD_PRPGE_4B;
+    program_cmd[1] = (uint8_t)(addr >> 24);
+    program_cmd[2] = (uint8_t)(addr >> 16);
+    program_cmd[3] = (uint8_t)(addr >> 8);
+    program_cmd[4] = (uint8_t)addr;
+
+    /* Copy the actual payload into the buffer right after the address */
+    memcpy(&program_cmd[5], data, len);
 
     ret = flash_xfer(spi, gpio, &wren, NULL, 1);
     if (ret != 0) {
@@ -183,7 +193,7 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
         return ret;
     }
 
-    ret = flash_xfer(spi, gpio, program_cmd, NULL, sizeof(program_cmd));
+    ret = flash_xfer(spi, gpio, program_cmd, NULL, 5 + len);
     if (ret != 0) {
         LOG_ERR("Page program command failed (ret=%d)", ret);
         return ret;
@@ -198,33 +208,30 @@ int write(const struct device *spi, const struct device *gpio, const uint8_t *da
     return 0;
 }
 
-int read(const struct device *spi, const struct device *gpio, uint8_t *result) {
-    const uint32_t addr = FLASH_TEST_ADDR;
+/* Updated signature to accept addr and len */
+int read(const struct device *spi, const struct device *gpio, uint32_t addr, uint8_t *result, size_t len) {
 
-    uint8_t read_cmd[9] = {
-        FLASH_CMD_READ_4B,
-        (uint8_t)(addr >> 24),
-        (uint8_t)(addr >> 16),
-        (uint8_t)(addr >> 8),
-        (uint8_t)addr,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-    };
-    uint8_t read_rx[9] = {0};
+    if (len > FLASH_PAGE_SIZE) {
+        LOG_ERR("Read buffer limit set to %d bytes for this test.", FLASH_PAGE_SIZE);
+        return -EINVAL;
+    }
 
-    int ret = flash_xfer(spi, gpio, read_cmd, read_rx, sizeof(read_cmd));
+    uint8_t read_cmd[5 + FLASH_PAGE_SIZE] = {0}; 
+    read_cmd[0] = FLASH_CMD_READ_4B;
+    read_cmd[1] = (uint8_t)(addr >> 24);
+    read_cmd[2] = (uint8_t)(addr >> 16);
+    read_cmd[3] = (uint8_t)(addr >> 8);
+    read_cmd[4] = (uint8_t)addr;
+
+    uint8_t read_rx[5 + FLASH_PAGE_SIZE] = {0};
+
+    int ret = flash_xfer(spi, gpio, read_cmd, read_rx, 5 + len);
     if (ret != 0) {
         LOG_ERR("Readback command failed (ret=%d)", ret);
         return ret;
     }
 
-    result[0] = read_rx[5];
-    result[1] = read_rx[6];
-    result[2] = read_rx[7];
-    result[3] = read_rx[8];
-    LOG_INF("Read back: %02X %02X %02X %02X", result[0], result[1], result[2], result[3]);
+    memcpy(result, &read_rx[5], len);
 
     return 0;
 }
@@ -232,29 +239,36 @@ int read(const struct device *spi, const struct device *gpio, uint8_t *result) {
 int write_test(const struct device *spi, const struct device *gpio) {
     LOG_INF("SPI Flash write test");
     
-    const uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    /* The payload we want to save */
+    const char *payload = "Hello FINCH! The custom PCB is fully operational!";
+    size_t payload_len = strlen(payload) + 1; // +1 to include the null terminator
 
-    //int ret = write(spi, gpio, data);
-    //if (ret != 0) {
-    //    LOG_ERR("Write failed (ret=%d)", ret);
-    //    return ret;
-    //}
+    uint32_t target_addr = FLASH_TEST_ADDR;
 
-    uint8_t read_data[4] = {0};
-    int ret = read(spi, gpio, read_data);
+    /* 1. Write the string */
+    int ret = write(spi, gpio, target_addr, (const uint8_t *)payload, payload_len);
+    if (ret != 0) {
+        LOG_ERR("Write failed (ret=%d)", ret);
+        return ret;
+    }
+
+    /* 2. Read it back */
+    uint8_t read_data[128] = {0};
+    ret = read(spi, gpio, target_addr, read_data, payload_len);
     if (ret != 0) {
         LOG_ERR("Read failed (ret=%d)", ret);
         return ret;
     }
 
-    for (int i = 0; i < 4; i++) {
-        if (read_data[i] != data[i]) {
-            LOG_ERR("Data mismatch at index %d: expected %02X, got %02X", i, data[i], read_data[i]);
-            return -EIO;
-        }
+    /* 3. Verify it */
+    if (memcmp(payload, read_data, payload_len) != 0) {
+        LOG_ERR("Data mismatch!");
+        LOG_ERR("Expected: %s", payload);
+        LOG_ERR("Got: %s", read_data);
+        return -EIO;
     }
 
-    LOG_INF("Successfully programmed");
+    LOG_INF("SUCCESS! Read back: '%s'", read_data);
     return 0;
 }
 
@@ -346,25 +360,6 @@ int main(void)
     } else {
         LOG_INF("SPI Flash write test successful");
     }
-
-    // Write
-    // uint8_t data[4] = {0xDE, 0xAD, 0xBE, 0xEF};
-    // ret = write(spi, gpio, data);
-
-    // if (ret != 0) {
-    //     LOG_ERR("SPI Flash write failed (ret=%d)", ret);
-    // } else {
-    //     LOG_INF("SPI Flash write successful");
-    // }
-
-    // Read
-    // uint8_t read_data[4] = {0};
-    // ret = read(spi, gpio, read_data);
-    // if (ret != 0) {
-    //     LOG_ERR("SPI Flash read failed (ret=%d)", ret);
-    // } else {
-    //     LOG_INF("SPI Flash read successful: %02X %02X %02X %02X", read_data[0], read_data[1], read_data[2], read_data[3]);
-    // }
 
     LOG_INF("Setting CS pin high in %d ms", WAIT_MS);
     k_msleep(WAIT_MS);
