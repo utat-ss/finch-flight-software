@@ -51,7 +51,8 @@ static int flash_read_status(const struct device *spi, const struct device *gpio
 }
 
 static int flash_wait_ready(const struct device *spi, const struct device *gpio, uint32_t cs_pin) {
-    for (int elapsed = 0; elapsed < FLASH_POLL_TIMEOUT_MS; elapsed++) {
+    /* We multiply the timeout by 100 because we are checking much faster now */
+    for (int elapsed = 0; elapsed < (FLASH_POLL_TIMEOUT_MS * 100); elapsed++) {
         uint8_t status = 0;
         int ret = flash_read_status(spi, gpio, cs_pin, &status);
         if (ret != 0) return ret;
@@ -62,20 +63,35 @@ static int flash_wait_ready(const struct device *spi, const struct device *gpio,
             return -EIO;
         }
         if ((status & BIT(0)) == 0U) return 0;
-        k_msleep(1);
+        
+        /* Spin the CPU for 10 microseconds instead of putting the RTOS to sleep */
+        k_busy_wait(10); 
     }
     return -ETIMEDOUT;
+}
+
+int spi_flash_erase_sector(const struct device *spi, const struct device *gpio, uint32_t cs_pin, uint32_t addr) {
+    const uint8_t wren = FLASH_CMD_WRENB;
+    uint8_t erase_cmd[5] = { FLASH_CMD_ER256_4B, (addr >> 24), (addr >> 16), (addr >> 8), addr };
+
+    /* 1. Send Write Enable */
+    int ret = flash_xfer(spi, gpio, cs_pin, &wren, NULL, 1);
+    if (ret != 0) return ret;
+
+    /* 2. Send Erase Command */
+    ret = flash_xfer(spi, gpio, cs_pin, erase_cmd, NULL, sizeof(erase_cmd));
+    if (ret != 0) return ret;
+
+    /* 3. Wait for the massive erase to finish (can take up to 1 second!) */
+    return flash_wait_ready(spi, gpio, cs_pin);
 }
 
 int spi_flash_write(const struct device *spi, const struct device *gpio, uint32_t cs_pin, uint32_t addr, const uint8_t *data, size_t len) {
     if (len > FLASH_PAGE_SIZE) return -EINVAL;
 
     const uint8_t wren = FLASH_CMD_WRENB;
-    uint8_t erase_cmd[5] = { FLASH_CMD_ER256_4B, (addr >> 24), (addr >> 16), (addr >> 8), addr };
-
-    flash_xfer(spi, gpio, cs_pin, &wren, NULL, 1);
-    flash_xfer(spi, gpio, cs_pin, erase_cmd, NULL, sizeof(erase_cmd));
-    flash_wait_ready(spi, gpio, cs_pin);
+    
+    /* NO MORE ERASING HERE! We go straight to writing. */
 
     uint8_t program_cmd[5 + FLASH_PAGE_SIZE]; 
     program_cmd[0] = FLASH_CMD_PRPGE_4B;
@@ -85,8 +101,15 @@ int spi_flash_write(const struct device *spi, const struct device *gpio, uint32_
     program_cmd[4] = addr;
     memcpy(&program_cmd[5], data, len);
 
-    flash_xfer(spi, gpio, cs_pin, &wren, NULL, 1);
-    flash_xfer(spi, gpio, cs_pin, program_cmd, NULL, 5 + len);
+    /* 1. Send Write Enable (Required before every single 256-byte page) */
+    int ret = flash_xfer(spi, gpio, cs_pin, &wren, NULL, 1);
+    if (ret != 0) return ret;
+
+    /* 2. Blast the 256 bytes into the chip */
+    ret = flash_xfer(spi, gpio, cs_pin, program_cmd, NULL, 5 + len);
+    if (ret != 0) return ret;
+
+    /* 3. Wait for the chip to move data from its 256-byte buffer into permanent silicon (~1 ms) */
     return flash_wait_ready(spi, gpio, cs_pin);
 }
 
