@@ -61,6 +61,16 @@ adcs_rc_t adcs_init(void)
 	return ADCS_RC_OK;
 }
 
+static bool adcs_verify_checksum(const uint8_t *buf, uint8_t len)
+{
+	uint8_t sum = 0;
+	for (uint8_t i = 0; i < len; ++i) {
+		sum += buf[i];
+	}
+
+	return sum == 0;
+}
+
 adcs_rc_t adcs_get_id(uint8_t *id, uint8_t id_size)
 {
 	__ASSERT(id, "ID array cannot be NULL.");
@@ -111,7 +121,11 @@ adcs_rc_t adcs_get_id(uint8_t *id, uint8_t id_size)
 		id[i] = adcs_rx_buf[adcs_rx_i];
 	}
 
-	/* TODO: Verify checksum. */
+	/* Verify checksum. */
+	if (!adcs_verify_checksum(adcs_rx_buf, adcs_rx_len)) {
+		LOG_ERR("ADCS Checksum error");
+		return ADCS_RC_ERR;
+	}
 
 	return ADCS_RC_OK;
 }
