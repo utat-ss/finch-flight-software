@@ -39,6 +39,8 @@
 		actled = &act_led;
 		led1 = &wrn_led;
 		wrnled = &wrn_led;
+
+		adcs-uart = &usart2;
 	};
 };
 
@@ -84,6 +86,15 @@
 	status = "okay";
 };
 
+&usart2 {
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3>;
+	pinctrl-names = "default";
+
+	current-speed = <115200>;
+
+	status = "okay";
+};
+
 &fdcan1 {
 	bitrate = <100000>;
 	sample-point = <875>;
@@ -103,6 +114,14 @@
 
 	usart1_tx_pb7: usart1_tx_pb7 {
 		pinmux = <STM32_PINMUX('B', 7, AF7)>;
+	};
+
+	usart2_tx_pa2: usart2_tx_pa2 {
+		pinmux = <STM32_PINMUX('A', 2, AF7)>;
+	};
+
+	usart2_rx_pa3: usart2_rx_pa3 {
+		pinmux = <STM32_PINMUX('A', 3, AF7)>;
 	};
 
 	fdcan1_rx_pa11: fdcan1_rx_pa11 {
