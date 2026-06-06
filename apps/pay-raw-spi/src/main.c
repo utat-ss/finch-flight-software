@@ -6,6 +6,9 @@
 #include <string.h> /* Required for memcpy, strlen, memcmp */
 #include <errno.h>
 
+/* Include global library */
+#include "flash_spi.h"
+
 #define FLASH_PAGE_SIZE 128
 
 /* Using the default spi1, gpioe configs from STM32. */
@@ -28,15 +31,7 @@ const char *gpio_set = "gpioe"; /* Used in log messages */
 #define CS_PIN 6
 #define WAIT_MS 1000
 
-#define FLASH_CMD_WRENB 0x06
-#define FLASH_CMD_RDSR1 0x05
-#define FLASH_CMD_CLPEF 0x30
-#define FLASH_CMD_ER256_4B 0xDC
-#define FLASH_CMD_PRPGE_4B 0x12
-#define FLASH_CMD_READ_4B 0x13
-
 #define FLASH_TEST_ADDR 0x00040000U
-#define FLASH_POLL_TIMEOUT_MS 10000
 
 static const struct spi_config spi_cfg = {
     .frequency = 1875000, /* 1 MHz */
@@ -44,197 +39,6 @@ static const struct spi_config spi_cfg = {
                  SPI_TRANSFER_MSB, /* MSB/LSB doesn't matter if sending 1 byte. Should be MSB still */
     .slave = 0, /* ignored when CS is manual */
 };
-
-static int flash_xfer(const struct device *spi,
-                     const struct device *gpio,
-                     const uint8_t *tx,
-                     uint8_t *rx,
-                     size_t len)
-{
-    struct spi_buf tx_buf = {
-        .buf = (void *)tx,
-        .len = len,
-    };
-
-    struct spi_buf_set tx_set = {
-        .buffers = &tx_buf,
-        .count = 1,
-    };
-
-    struct spi_buf rx_buf = {
-        .buf = rx,
-        .len = len,
-    };
-
-    struct spi_buf_set rx_set = {
-        .buffers = &rx_buf,
-        .count = 1,
-    };
-
-    int ret = gpio_pin_set(gpio, CS_PIN, 1);
-    if (ret != 0) {
-        return ret;
-    }
-
-    ret = gpio_pin_set(gpio, CS_PIN, 0);
-    if (ret != 0) {
-        return ret;
-    }
-
-    if (rx != NULL) {
-        ret = spi_transceive(spi, &spi_cfg, &tx_set, &rx_set);
-    } else {
-        ret = spi_write(spi, &spi_cfg, &tx_set);
-    }
-
-    int cs_ret = gpio_pin_set(gpio, CS_PIN, 1);
-    if ((ret == 0) && (cs_ret != 0)) {
-        ret = cs_ret;
-    }
-
-    return ret;
-}
-
-static int flash_read_status(const struct device *spi,
-                             const struct device *gpio,
-                             uint8_t *status)
-{
-    uint8_t tx[2] = {FLASH_CMD_RDSR1, 0x00};
-    uint8_t rx[2] = {0};
-
-    int ret = flash_xfer(spi, gpio, tx, rx, sizeof(tx));
-    if (ret != 0) {
-        return ret;
-    }
-
-    *status = rx[1];
-    return 0;
-}
-
-static int flash_wait_ready(const struct device *spi, const struct device *gpio)
-{
-    for (int elapsed = 0; elapsed < FLASH_POLL_TIMEOUT_MS; elapsed++) {
-        uint8_t status = 0;
-        int ret = flash_read_status(spi, gpio, &status);
-        if (ret != 0) {
-            return ret;
-        }
-
-        if ((status & (BIT(6) | BIT(5))) != 0) {
-            uint8_t clear_flags = FLASH_CMD_CLPEF;
-            (void)flash_xfer(spi, gpio, &clear_flags, NULL, 1);
-            LOG_ERR("Flash operation failed, status=0x%02X", status);
-            return -EIO;
-        }
-
-        if ((status & BIT(0)) == 0U) {
-            return 0;
-        }
-
-        k_msleep(1);
-    }
-
-    LOG_ERR("Timed out waiting for flash ready");
-    return -ETIMEDOUT;
-}
-
-/* Updated signature to accept addr and len */
-int write(const struct device *spi, const struct device *gpio, uint32_t addr, const uint8_t *data, size_t len) {
-
-    if (len > FLASH_PAGE_SIZE) {
-        LOG_ERR("Cannot write more than 1 page (%d bytes) at a time!", FLASH_PAGE_SIZE);
-        return -EINVAL;
-    }
-
-    const uint8_t wren = FLASH_CMD_WRENB;
-
-    /*1, erase before write*/
-    uint8_t erase_cmd[5] = {
-        FLASH_CMD_ER256_4B,
-        (uint8_t)(addr >> 24),
-        (uint8_t)(addr >> 16),
-        (uint8_t)(addr >> 8),
-        (uint8_t)addr,
-    };
-
-    int ret = flash_xfer(spi, gpio, &wren, NULL, 1);
-    if (ret != 0) {
-        LOG_ERR("WREN before erase failed (ret=%d)", ret);
-        return ret;
-    }
-
-    ret = flash_xfer(spi, gpio, erase_cmd, NULL, sizeof(erase_cmd));
-    if (ret != 0) {
-        LOG_ERR("Sector erase command failed (ret=%d)", ret);
-        return ret;
-    }
-
-    ret = flash_wait_ready(spi, gpio);
-    if (ret != 0) {
-        LOG_ERR("Sector erase did not complete (ret=%d)", ret);
-        return ret;
-    }
-
-    /*2, Program Data*/
-    /* Buffer size: 5 bytes for command/address + length of data */
-    uint8_t program_cmd[5 + FLASH_PAGE_SIZE]; 
-    program_cmd[0] = FLASH_CMD_PRPGE_4B;
-    program_cmd[1] = (uint8_t)(addr >> 24);
-    program_cmd[2] = (uint8_t)(addr >> 16);
-    program_cmd[3] = (uint8_t)(addr >> 8);
-    program_cmd[4] = (uint8_t)addr;
-
-    /* Copy the actual payload into the buffer right after the address */
-    memcpy(&program_cmd[5], data, len);
-
-    ret = flash_xfer(spi, gpio, &wren, NULL, 1);
-    if (ret != 0) {
-        LOG_ERR("WREN before program failed (ret=%d)", ret);
-        return ret;
-    }
-
-    ret = flash_xfer(spi, gpio, program_cmd, NULL, 5 + len);
-    if (ret != 0) {
-        LOG_ERR("Page program command failed (ret=%d)", ret);
-        return ret;
-    }
-
-    ret = flash_wait_ready(spi, gpio);
-    if (ret != 0) {
-        LOG_ERR("Page program did not complete (ret=%d)", ret);
-        return ret;
-    }
-
-    return 0;
-}
-
-/* Updated signature to accept addr and len */
-int read(const struct device *spi, const struct device *gpio, uint32_t addr, uint8_t *result, size_t len) {
-
-    if (len > FLASH_PAGE_SIZE) {
-        LOG_ERR("Read buffer limit set to %d bytes for this test.", FLASH_PAGE_SIZE);
-        return -EINVAL;
-    }
-
-    uint8_t read_cmd[5 + FLASH_PAGE_SIZE] = {0}; 
-    read_cmd[0] = FLASH_CMD_READ_4B;
-    read_cmd[1] = (uint8_t)(addr >> 24);
-    read_cmd[2] = (uint8_t)(addr >> 16);
-    read_cmd[3] = (uint8_t)(addr >> 8);
-    read_cmd[4] = (uint8_t)addr;
-
-    uint8_t read_rx[5 + FLASH_PAGE_SIZE] = {0};
-
-    int ret = flash_xfer(spi, gpio, read_cmd, read_rx, 5 + len);
-    if (ret != 0) {
-        LOG_ERR("Readback command failed (ret=%d)", ret);
-        return ret;
-    }
-
-    memcpy(result, &read_rx[5], len);
-
-    return 0;
-}
 
 int write_test(const struct device *spi, const struct device *gpio) {
     LOG_INF("SPI Flash write test");
@@ -245,16 +49,16 @@ int write_test(const struct device *spi, const struct device *gpio) {
 
     uint32_t target_addr = FLASH_TEST_ADDR;
 
-    /* 1. Write the string */
-    int ret = write(spi, gpio, target_addr, (const uint8_t *)payload, payload_len);
+    /* 1. Write the string using the library */
+    int ret = spi_flash_write(spi, gpio, CS_PIN, target_addr, (const uint8_t *)payload, payload_len);
     if (ret != 0) {
         LOG_ERR("Write failed (ret=%d)", ret);
         return ret;
     }
 
-    /* 2. Read it back */
+    /* 2. Read it back using the library */
     uint8_t read_data[128] = {0};
-    ret = read(spi, gpio, target_addr, read_data, payload_len);
+    ret = spi_flash_read(spi, gpio, CS_PIN, target_addr, read_data, payload_len);
     if (ret != 0) {
         LOG_ERR("Read failed (ret=%d)", ret);
         return ret;
