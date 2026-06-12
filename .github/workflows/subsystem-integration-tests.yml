@@ -6,11 +6,9 @@ on:
       - opened
       - reopened
       - synchronize
-  push:
-    branches:
-      - main
   schedule:
     - cron: '0 5 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -34,6 +32,7 @@ jobs:
           source .venv/bin/activate
           pip install west
           pyocd pack install stm32g431rbtx
+          pyocd pack install stm32h743zitx
           rm -rf ../.west
           west init -l .
           west update
@@ -43,8 +42,14 @@ jobs:
       - name: Release serial devices
         run: |
           for dev in /dev/ttyACM0 /dev/ttyACM1; do
-            sudo fuser -k "$dev" || true
+            if [ -e "$dev" ]; then
+              sudo fuser -vk "$dev" || true
+              sudo lsof "$dev" || true
+            fi
           done
+
+          # Give the kernel time to release handles
+          sleep 2
 
       - name: Run subsystem integration tests
         env:
@@ -57,6 +62,3 @@ jobs:
             --tag subsystem-integration-tests   \
             --device-testing                    \
             --hardware-map ~/hardware_map.yaml
-
-      - name: Clean environment
-        run: rm -rf twister-out*

@@ -72,18 +72,4 @@ ZTEST(debug_test, test_stdout) {
 		}
 		printk("\n");
 	}
-
-	int image_new[N->z][N->y][N->x];
-
-	reconstruct_prediction(N, prediction_new, image_new);
-
-	printk("-----------------------------------\nReconstruction\n\n");
-	for (int z = 0; z < N->z; ++z) {
-		for (int y = 0; y < N->y; ++y) {
-			for (int x = 0; x < N->x; ++x)
-				printk("%d ", image_new[z][y][x]);
-			printk("\n");
-		}
-		printk("\n");
-	}
 }
