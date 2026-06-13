@@ -90,26 +90,38 @@ int spi_flash_write(const struct device *spi, const struct device *gpio, uint32_
     if (len > FLASH_PAGE_SIZE) return -EINVAL;
 
     const uint8_t wren = FLASH_CMD_WRENB;
-    
-    /* NO MORE ERASING HERE! We go straight to writing. */
-
-    uint8_t program_cmd[5 + FLASH_PAGE_SIZE]; 
-    program_cmd[0] = FLASH_CMD_PRPGE_4B;
-    program_cmd[1] = (addr >> 24);
-    program_cmd[2] = (addr >> 16);
-    program_cmd[3] = (addr >> 8);
-    program_cmd[4] = addr;
-    memcpy(&program_cmd[5], data, len);
 
     /* 1. Send Write Enable (Required before every single 256-byte page) */
     int ret = flash_xfer(spi, gpio, cs_pin, &wren, NULL, 1);
     if (ret != 0) return ret;
 
-    /* 2. Blast the 256 bytes into the chip */
-    ret = flash_xfer(spi, gpio, cs_pin, program_cmd, NULL, 5 + len);
+    /* 2. Prepare ONLY the 5-byte command header on the stack */
+    uint8_t header[5];
+    header[0] = FLASH_CMD_PRPGE_4B;
+    header[1] = (addr >> 24);
+    header[2] = (addr >> 16);
+    header[3] = (addr >> 8);
+    header[4] = addr;
+
+    /* 3. THE SCATTER-GATHER MAGIC 
+     * We chain the header and the ROM data together. 
+     * No memcpy! The CPU does zero work here.
+     */
+    struct spi_buf tx_bufs[] = {
+        { .buf = header, .len = sizeof(header) },
+        /* We cast to (void *) to satisfy the Zephyr struct, but it will not be modified */
+        { .buf = (void *)data, .len = len } 
+    };
+    struct spi_buf_set tx_set = { .buffers = tx_bufs, .count = 2 };
+
+    /* 4. Manually toggle CS and send the Buffer Set directly to the SPI/DMA driver */
+    gpio_pin_set(gpio, cs_pin, 0);
+    ret = spi_write(spi, &spi_cfg, &tx_set);
+    gpio_pin_set(gpio, cs_pin, 1);
+
     if (ret != 0) return ret;
 
-    /* 3. Wait for the chip to move data from its 256-byte buffer into permanent silicon (~1 ms) */
+    /* 5. Wait for the chip to physically burn the data into silicon */
     return flash_wait_ready(spi, gpio, cs_pin);
 }
 
