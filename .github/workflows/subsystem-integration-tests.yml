@@ -43,13 +43,12 @@ jobs:
         run: |
           for dev in /dev/ttyACM0 /dev/ttyACM1; do
             if [ -e "$dev" ]; then
-              sudo fuser -vk "$dev" || true
-              sudo lsof "$dev" || true
+              sudo fuser -vk "$dev" 2>/dev/null || true
+              sudo lsof -w "$dev" 2>/dev/null || true
             fi
           done
-
-          # Give the kernel time to release handles
           sleep 2
+        shell: bash
 
       - name: Run subsystem integration tests
         env:

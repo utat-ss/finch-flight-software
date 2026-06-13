@@ -10,9 +10,13 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
 
+/*adcs id */
 uint8_t const ADCS_ID_SIZE = 12;
 static uint8_t const adcs_id_expected[] = {0x54, 0x41, 0x44, 0x31, 0x30, 0x32,
 					   0x30, 0x35, 0x33, 0x44, 0x00, 0x00};
+
+/*adcs error things*/
+uint8_t const ADCS_ERROR_SIZE = 4;
 
 /* ADCS is connected via USART2. */
 static const struct device *const adcs_uart = DEVICE_DT_GET(DT_ALIAS(adcs_uart));
@@ -119,6 +123,70 @@ adcs_rc_t adcs_get_id(uint8_t *id, uint8_t id_size)
 		}
 
 		id[i] = adcs_rx_buf[adcs_rx_i];
+	}
+
+	/* Verify checksum. */
+	if (!adcs_verify_checksum(adcs_rx_buf, adcs_rx_len)) {
+		LOG_ERR("ADCS Checksum error");
+		return ADCS_RC_ERR;
+	}
+
+	return ADCS_RC_OK;
+}
+
+static uint8_t generate_checksum (const uint8_t *buf,size_t len_without_checksum){
+	uint*_t sum=0;		
+
+	for (size_t i=0; i<len_withou7t_checksum ;i++){
+		sum+= buf[i];
+	}
+
+	//2's complement 
+	returm (uint8_t)(0x00 - sum); 
+}
+
+adcs_rc_t adcs_get_error(uint8_t *err, uint8_t err_size){
+
+	/* Reset RX semaphore and count state */
+	k_sem_reset(&adcs_rx_sem);
+	adcs_rx_len = 0U;
+	adcs_rx_expected = 4U + ADCS_ERROR_SIZE + 1U;
+
+	/**/
+	uint8_t adcs_err[] = {0xc9, 0x81, 0x01, 0x00};
+	uint8_t checksum_cmd = generate_checksum (adcs_err_cmd,4);
+	uint8_t adcs_err_cmd[] = {0xc9, 0x81, 0x01, 0x00, checksum_cmd};
+	
+		/* Send the command to read the ID. */
+	for (size_t i = 0; i < sizeof(adcs_id_cmd); ++i) {
+		uart_poll_out(adcs_uart, adcs_err_cmd[i]);
+	}
+
+		/* Wait for the ADCS to finish replying. */
+	if (k_sem_take(&adcs_rx_sem, K_MSEC(1000)) != 0) {
+		LOG_ERR("ADCS ID response timeout");
+		return ADCS_RC_ERR;
+	}
+
+	if (adcs_rx_len < adcs_rx_expected) {
+		LOG_ERR("ADCS ID response too short (%u bytes)", adcs_rx_len);
+		return ADCS_RC_ERR;
+	}
+
+	uint8_t adcs_rx_i = 0;
+
+	/* Verify the 4 byte RX header matches 4 byte command header. */
+	for (; adcs_rx_i < 4; ++adcs_rx_i) {
+		if (adcs_rx_buf[adcs_rx_i] != adcs_id_cmd[adcs_rx_i]) {
+			return ADCS_RC_ERR;
+		}
+	}
+
+
+	/* Output ID */
+	for (uint8_t i = 0; i<ADCS_ERROR_SIZE ; ++i, ++adcs_rx_i) {
+
+		err[i] = adcs_rx_buf[adcs_rx_i];
 	}
 
 	/* Verify checksum. */
