@@ -183,7 +183,7 @@ adcs_rc_t adcs_get_error(uint8_t *err, uint8_t err_size){
 	}
 
 
-	/* Output ID */
+	/* Output err */
 	for (uint8_t i = 0; i<ADCS_ERROR_SIZE ; ++i, ++adcs_rx_i) {
 
 		err[i] = adcs_rx_buf[adcs_rx_i];
