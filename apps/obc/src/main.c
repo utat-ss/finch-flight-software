@@ -38,8 +38,11 @@ int main(void)
 			adcs_id[0], adcs_id[1], adcs_id[2], adcs_id[3], adcs_id[4], adcs_id[5],
 			adcs_id[6], adcs_id[7], adcs_id[8], adcs_id[9], adcs_id[10], adcs_id[11]);
 	
-	uint8_t adcs_error[ADCS_ERROR_SIZE];
-	LOG_INF("ADCS Error: 0x%x 0x%x 0x%x 0x%x", adcs_error[0], acds_error[1], acds_error[2], acds_error[3]);
+	uint8_t adcs_error[2];
+	adsc_rc= adcs_get_error(adcs_error, 2);
+	if (adcs_error[0]!=0){LOG_ERR("CMG hard error");}
+	else if (adcs_error[1]!=0){LOG_ERR("Magnetorquer hard error");} 
+	else {LOG_INF("All Good!");}
 	
 	while (1) {
 		k_msleep(1000);

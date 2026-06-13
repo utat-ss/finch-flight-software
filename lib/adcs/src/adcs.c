@@ -182,11 +182,11 @@ adcs_rc_t adcs_get_error(uint8_t *err, uint8_t err_size){
 		}
 	}
 
-
+	uint8_t error_read[ADCS_ERROR_SIZE]={0};
 	/* Output err */
 	for (uint8_t i = 0; i<ADCS_ERROR_SIZE ; ++i, ++adcs_rx_i) {
 
-		err[i] = adcs_rx_buf[adcs_rx_i];
+		error_read[i] = adcs_rx_buf[adcs_rx_i];
 	}
 
 	/* Verify checksum. */
@@ -194,6 +194,10 @@ adcs_rc_t adcs_get_error(uint8_t *err, uint8_t err_size){
 		LOG_ERR("ADCS Checksum error");
 		return ADCS_RC_ERR;
 	}
+
+	/* the way i think this cam work, might be fsalse lmao*/
+	if ((error_read[0] & 0x01)!=0){err[0]=1;}
+	if ((error_read[1] & 0b111)!=0) {err[1]=1;}
 
 	return ADCS_RC_OK;
 }
