@@ -129,3 +129,66 @@ adcs_rc_t adcs_get_id(uint8_t *id, uint8_t id_size)
 
 	return ADCS_RC_OK;
 }
+
+
+/* 
+ * Generic read - builds and sends a read request, waits for response 
+ * into adcs_rx_buf. Caller is responsible for parsing adcs_rx_buf.
+ * expected_data_bytes should be data_count * 4.
+ */
+static adcs_rc_t adcs_read(const uint8_t *cmd, uint8_t cmd_len, uint8_t expected_data_bytes)
+{
+    k_sem_reset(&adcs_rx_sem);
+    adcs_rx_len = 0U;
+    adcs_rx_expected = 4U + expected_data_bytes + 1U; /* header + data + checksum */
+
+    for (size_t i = 0; i < cmd_len; ++i) {
+        uart_poll_out(adcs_uart, cmd[i]);
+    }
+
+    if (k_sem_take(&adcs_rx_sem, K_MSEC(1000)) != 0) {
+        LOG_ERR("ADCS response timeout");
+        return ADCS_RC_ERR;
+    }
+
+    if (adcs_rx_len < adcs_rx_expected) {
+        LOG_ERR("ADCS response too short (%u bytes)", adcs_rx_len);
+        return ADCS_RC_ERR;
+    }
+
+    if (!adcs_verify_checksum(adcs_rx_buf, adcs_rx_len)) {
+        LOG_ERR("ADCS checksum error");
+        return ADCS_RC_ERR;
+    }
+
+    return ADCS_RC_OK;
+}
+
+adcs_rc_t adcs_get_status(uint32_t *stat)
+{
+    __ASSERT(stat, "Status pointer cannot be NULL.");
+
+    /* Read STAT register (0x80), 1 data count (4 bytes), user map (0x00) */
+    uint8_t cmd[] = {0xC9, 0x80, 0x01, 0x00, 0x56};
+
+    adcs_rc_t rc = adcs_read(cmd, sizeof(cmd), 4U);
+    if (rc != ADCS_RC_OK) {
+        return rc;
+    }
+
+    /* Verify header echo matches command header */
+    for (uint8_t i = 0; i < 4; ++i) {
+        if (adcs_rx_buf[i] != cmd[i]) {
+            LOG_ERR("ADCS status response header mismatch at byte %u", i);
+            return ADCS_RC_ERR;
+        }
+    }
+
+    /* Parse 4 byte STAT value (little-endian) starting at byte 4 */
+    *stat = (uint32_t)adcs_rx_buf[4]
+          | (uint32_t)adcs_rx_buf[5] << 8
+          | (uint32_t)adcs_rx_buf[6] << 16
+          | (uint32_t)adcs_rx_buf[7] << 24;
+
+    return ADCS_RC_OK;
+}
