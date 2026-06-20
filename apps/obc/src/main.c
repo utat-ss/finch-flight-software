@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 The FINCH CubeSat Project Flight Software Contributors
+ * Copyright (c) 2026 The FINCH CubeSat Project Flight Software Contributors
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -56,7 +56,7 @@ void rx_callback(const struct device *dev, struct can_frame *frame, void *user_d
 	}
 }
 
-int can_init()
+int can_init(void)
 {
 	int ret;
 
@@ -86,7 +86,7 @@ void send_can_response(uint8_t id[ADCS_ID_SIZE])
 {
 	int ret;
 
-	// frame 1 (8 bytes) 
+	// frame 1 (8 bytes)
 	struct can_frame frame1 = {
 		.flags = 0U,
 		.id = 0x01,
@@ -125,26 +125,26 @@ void adcs_thread(void *a, void *b, void *c)
 		k_msgq_get(&adcs_req_q, &req, K_FOREVER);
 
 		switch (req.cmd) {
-			case ADCS_CMD_GET_ID: {
-				LOG_INF("ADCS THREAD CMD[0x%x]", req.cmd);
+		case ADCS_CMD_GET_ID: {
+			LOG_INF("ADCS THREAD CMD[0x%x]", req.cmd);
 
-				uint8_t id[ADCS_ID_SIZE];
+			uint8_t id[ADCS_ID_SIZE];
 
-				adcs_rc_t rc = adcs_get_id(id, ADCS_ID_SIZE);
-				if (rc != ADCS_RC_OK) {
-					LOG_ERR("ADCS failed");
-					continue;
-				}
-
-				LOG_INF("ADCS GET ID");
-
-				send_can_response(id);
-				break;
+			adcs_rc_t rc = adcs_get_id(id, ADCS_ID_SIZE);
+			if (rc != ADCS_RC_OK) {
+				LOG_ERR("ADCS failed");
+				continue;
 			}
 
-			default:
-				LOG_WRN("UNKNOWN ADCS CMD 0x%x", req.cmd);
-				break;
+			LOG_INF("ADCS GET ID");
+
+			send_can_response(id);
+			break;
+		}
+
+		default:
+			LOG_WRN("UNKNOWN ADCS CMD 0x%x", req.cmd);
+			break;
 		}
 		// potential to add more request types: adcs_get..., a single
 		// adcs thread handles all accesses to adcs component

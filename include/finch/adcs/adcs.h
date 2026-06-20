@@ -39,11 +39,7 @@ adcs_rc_t adcs_init(void);
  * Note the ID of the dev board is different than the actual module.
  *
  * @param id    ID of the ADCS module.
-<<<<<<< HEAD
  * @param size	Size of the ID array, MUST be ADCS_ID_SIZE.
-=======
- * @param len	Size of the ID array, MUST be ADCS_ID_SIZE.
->>>>>>> 3850595 (adcs: add adcs library)
  *
  * @retval ADCS_RC_OK   On success.
  * @retval ADCS_RC_ERR  On failure.
