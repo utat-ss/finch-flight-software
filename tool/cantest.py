@@ -33,6 +33,10 @@ while True:
     if msg is None:
         continue
 
+    if msg.is_error_frame:
+       print(f"ERROR FRAME: {msg}")
+       continue
+
     print(
         f"RX: ID=0x{msg.arbitration_id:X} "
         f"DLC={msg.dlc} "
