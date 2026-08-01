@@ -9,6 +9,7 @@ manifest:
         name-allowlist:
           - hal_stm32
           - cmsis_6
+          - fatfs
       west-commands: scripts/west-commands.yml
     - name: libcsp
       url: https://github.com/libcsp/libcsp.git

@@ -39,7 +39,24 @@
 		actled = &act_led;
 		led1 = &wrn_led;
 		wrnled = &wrn_led;
-	};
+
+        /* ... existing aliases ... */
+        sd-trans-en = &sd_trans_en;
+        sd-mux-en = &sd_mux_en;
+    };
+
+    /* Add this node */
+    board_control: board-control {
+        compatible = "gpio-keys"; /* Or a custom generic driver */
+        sd_trans_en: sd_trans_en {
+            gpios = <&gpiod 0 GPIO_ACTIVE_HIGH>; /* Update to your actual port/pin */
+            label = "SD Transceiver Enable";
+        };
+        sd_mux_en: sd_mux_en {
+            gpios = <&gpiod 8 GPIO_ACTIVE_LOW>; /* Update to your actual port/pin */
+            label = "SD Mux Enable";
+        };
+    };
 };
 
 &clk_hse {
@@ -51,7 +68,7 @@
 	div-m = <2>;
 	mul-n = <80>;
 	div-p = <2>;
-	div-q = <2>;
+	div-q = <20>;
 	div-r = <2>;
 	clocks = <&clk_hse>;
 	status = "okay";
@@ -120,31 +137,41 @@
 &pinctrl {
     sdmmc1_d0_pc8: sdmmc1_d0_pc8 {
         pinmux = <STM32_PINMUX('C', 8, AF12)>;
+		bias-pull-up;
     };
 
     sdmmc1_d1_pc9: sdmmc1_d1_pc9 {
         pinmux = <STM32_PINMUX('C', 9, AF12)>;
+		bias-pull-up;
     };
 
     sdmmc1_d2_pc10: sdmmc1_d2_pc10 {
         pinmux = <STM32_PINMUX('C', 10, AF12)>;
+		bias-pull-up;
     };
 
     sdmmc1_d3_pc11: sdmmc1_d3_pc11 {
         pinmux = <STM32_PINMUX('C', 11, AF12)>;
+		bias-pull-up;
+    };
+
+    sdmmc1_cmd_pd2: sdmmc1_cmd_pd2 {
+        pinmux = <STM32_PINMUX('D', 2, AF12)>;
+		bias-pull-up;
     };
 
     sdmmc1_ck_pc12: sdmmc1_ck_pc12 {
         pinmux = <STM32_PINMUX('C', 12, AF12)>;
     };
-
-    sdmmc1_cmd_pd2: sdmmc1_cmd_pd2 {
-        pinmux = <STM32_PINMUX('D', 2, AF12)>;
-    };
 };
+
 
 &sdmmc1 {
     status = "okay";
+    
+    /* ADD THESE TWO LINES */
+    clocks = <&rcc STM32_CLOCK_BUS_AHB3 0x00000000>,
+             <&rcc STM32_SRC_PLL1_Q SDMMC_SEL(0)>;
 
     pinctrl-0 = <
         &sdmmc1_d0_pc8
@@ -156,10 +183,7 @@
     >;
 
     pinctrl-names = "default";
-
     bus-width = <4>;
-
     cd-gpios = <&gpioa 0 GPIO_ACTIVE_LOW>;
-
     disk-name = "SD";
 };

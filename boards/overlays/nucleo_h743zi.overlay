@@ -1,0 +1,38 @@
+/* 1. Turn on the power to the DMA hardware robots */
+&dma1 {
+    status = "okay";
+};
+
+&dma2 {
+    status = "okay";
+};
+
+/* 2. Configure the SPI controller and wire the DMA to it */
+&spi1 {
+    status = "okay";
+    
+    /* The specific STM32H7 Request IDs for SPI1 (38 and 37) */
+    dmas = <&dma1 0 38 0x400 0x0>,
+           <&dma1 1 37 0x400 0x0>;
+    dma-names = "tx", "rx";
+};
+
+/* 3. Enable the GPIO port for WP and CD */
+&gpiod {
+    status = "okay";
+};
+
+
+&sdmmc1 {
+    status = "okay";
+    pinctrl-0 = <&sdmmc1_d0_pc8 
+                 &sdmmc1_d1_pc9 
+                 &sdmmc1_d2_pc10 
+                 &sdmmc1_d3_pc11 
+                 &sdmmc1_ck_pc12 
+                 &sdmmc1_cmd_pd2>;
+    pinctrl-names = "default";
+    
+    bus-width = <4>;
+    disk-name = "SD";
+};
