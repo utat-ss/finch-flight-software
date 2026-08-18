@@ -121,7 +121,7 @@ adcs_rc_t adcs_get_id(uint8_t *id, uint8_t id_size)
 		id[i] = adcs_rx_buf[adcs_rx_i];
 	}
 
-	/* Verify checksum. */
+    /* Verify checksum. */
 	if (!adcs_verify_checksum(adcs_rx_buf, adcs_rx_len)) {
 		LOG_ERR("ADCS Checksum error");
 		return ADCS_RC_ERR;
