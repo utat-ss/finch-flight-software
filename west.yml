@@ -15,3 +15,7 @@ manifest:
       # not a stable revision; run git blame and git show for justification
       revision: 65bc556f7bd658d17833d689b3023e4c03c9165e
       path: modules/lib/libcsp
+    - name: littlefs
+      url: https://github.com/littlefs-project/littlefs.git
+      revision: v2.11.3
+      path: modules/lib/littlefs
