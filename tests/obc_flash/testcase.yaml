@@ -1,0 +1,4 @@
+tests:
+  obc_flash.basic:
+    platform_allow:
+      - obc
