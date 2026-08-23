@@ -108,6 +108,12 @@
 	status = "okay";
 };
 
+&spi1 {
+    pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pa7>;
+    pinctrl-names = "default";
+    status = "okay";
+};
+
 &pinctrl {
 	usart1_rx_pb6: usart1_rx_pb6 {
 		pinmux = <STM32_PINMUX('B', 6, AF7)>;
@@ -131,6 +137,18 @@
 
 	fdcan1_tx_pa12: fdcan1_tx_pa12 {
 		pinmux = <STM32_PINMUX('A', 12, AF9)>;
+	};
+
+    spi1_sck_pa5: spi1_sck_pa5 {
+		pinmux = <STM32_PINMUX('A', 5, AF5)>;
+	};
+
+	spi1_miso_pa6: spi1_miso_pa6 {
+		pinmux = <STM32_PINMUX('A', 6, AF5)>;
+	};
+	
+	spi1_mosi_pa7: spi1_mosi_pa7 {
+		pinmux = <STM32_PINMUX('A', 7, AF5)>;
 	};
 };
 
