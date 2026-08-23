@@ -7,14 +7,50 @@
 #include <finch/adcs/adcs.h>
 #include <finch/csp/csp.h>
 
+#include <finch/obc_flash/util.h>
+#include <lfs.h>
+#include <lfs_util.h>
+#include <finch/obc_littlefs/lfs_callbacks.h>
+
 #include <zephyr/logging/log.h>
 #include <zephyr/types.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/watchdog.h>
 #include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
 
 LOG_MODULE_REGISTER(obc);
+
+/* SPI controller */
+#define SPI_NODE DT_NODELABEL(spi1)
+/* Manual CS GPIO. Controlling CS pin manually. */
+#define CS_GPIO_NODE DT_NODELABEL(gpioa)
+#define CS_PIN       4
+
+
+// Filesystem configs
+lfs_t lfs;
+lfs_file_t file;
+
+struct lfs_config cfg = {
+    // block device operations
+    .read  = lfs_cb_read,
+    .prog  = lfs_cb_prog,
+    .erase = lfs_cb_erase,
+    .sync  = lfs_cb_sync,
+
+    // block device configuration
+    .read_size = 4,
+    .prog_size = 4,
+    .block_size = 4096,
+    .block_count = 2048,
+    .block_cycles = 500,
+    .cache_size = 256,
+    .lookahead_size = 16,
+    .compact_thresh = 0,
+};
+struct lfs_flash_context flash_context;
 
 int main(void)
 {
@@ -25,6 +61,30 @@ int main(void)
 	 */
 	const struct device *wdt = DEVICE_DT_GET(DT_ALIAS(watchdog0));
 	int wdt_channel_id;
+
+    // configuring SPI and GPIO devices for flash operations
+    const struct device *spi = DEVICE_DT_GET(SPI_NODE);
+    const struct device *gpio = DEVICE_DT_GET(CS_GPIO_NODE);
+    int ret = gpio_pin_configure(gpio, CS_PIN, GPIO_OUTPUT_HIGH);
+    // unlock flash memory to allow write/erase operations
+    ret = obc_flash_global_unlock(spi, gpio, CS_PIN);
+    // configure flash context for littlefs
+    flash_context.spi = spi;
+    flash_context.gpio = gpio;
+    flash_context.cs_pin = CS_PIN;
+    cfg.context = &flash_context;
+    // mount littlefs filesystem, format if mount fails
+    int fs_err = lfs_mount(&lfs, &cfg);
+    if (fs_err) {
+        LOG_INF("Failed to mount filesystem, formatting and retrying...");
+        fs_err = lfs_format(&lfs, &cfg);
+        // retry mounting after formatting
+        fs_err = lfs_mount(&lfs, &cfg);
+        if (fs_err) {
+            LOG_ERR("Failed to mount filesystem after formatting");
+            return fs_err;
+        }
+    }
 
 	if (!device_is_ready(wdt)) {
 		LOG_ERR("%s: device is not ready", wdt->name);
