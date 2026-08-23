@@ -4,3 +4,4 @@
 add_subdirectory_ifdef(CONFIG_FINCH_ADCS adcs)
 add_subdirectory_ifdef(CONFIG_FINCH_CCSDS123B ccsds123b)
 add_subdirectory_ifdef(CONFIG_FINCH_CSP csp)
+add_subdirectory_ifdef(CONFIG_FINCH_OBC_FLASH obc_flash)
