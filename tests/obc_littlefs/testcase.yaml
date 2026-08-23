@@ -1,0 +1,4 @@
+tests:
+  obc_littlefs.basic:
+    platform_allow:
+      - obc
